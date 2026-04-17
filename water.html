@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boreal Goods — Plant Watering Reminder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest: #2d4a35;
+      --forest-deep: #1e3326;
+      --forest-light: #4a7c59;
+      --bark: #6b4c2a;
+      --bark-light: #a07850;
+      --cream: #f7f2eb;
+      --fog: #e8e0d4;
+      --charcoal: #3f3c38;
+      --mist: #c8d4c0;
+      --gold: #c9a84c;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background-color: var(--cream);
+      color: var(--charcoal);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    .forest-bar { background: var(--forest-deep); height: 5px; width: 100%; }
+
+    header {
+      padding: 2rem 1.5rem 1.5rem;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-wordmark { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
+    .logo-trees { width: 80px; height: auto; margin-bottom: 0.5rem; opacity: 0.9; }
+    .logo-boreal { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.6rem; letter-spacing: 0.18em; color: var(--forest-deep); text-transform: uppercase; }
+    .logo-goods { font-family: 'Jost', sans-serif; font-weight: 300; font-size: 0.85rem; letter-spacing: 0.35em; color: var(--bark); text-transform: uppercase; }
+    .logo-divider { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.3rem; }
+    .logo-divider-line { width: 30px; height: 1px; background: var(--bark-light); }
+    .logo-diamond { width: 5px; height: 5px; background: var(--bark-light); transform: rotate(45deg); }
+    .logo-tagline { font-family: 'Jost', sans-serif; font-weight: 300; font-size: 0.62rem; letter-spacing: 0.3em; color: var(--bark-light); text-transform: uppercase; }
+
+    .section-divider { width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--forest-light), transparent); margin: 0 auto 2rem; }
+
+    main {
+      flex: 1;
+      padding: 0 1.5rem 3rem;
+      position: relative;
+      z-index: 1;
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ── Screens ── */
+    #setup-screen,
+    #email-screen,
+    #check-email-screen,
+    #confirm-screen,
+    #done-screen,
+    #history-screen { display: none; animation: fadeUp 0.4s ease forwards; }
+
+    #setup-screen.active,
+    #email-screen.active,
+    #check-email-screen.active,
+    #confirm-screen.active,
+    #done-screen.active,
+    #history-screen.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .screen-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 600; color: var(--forest-deep); text-align: center; margin-bottom: 0.4rem; line-height: 1.3; }
+    .screen-subtitle { font-size: 0.82rem; font-weight: 300; color: var(--bark-light); text-align: center; letter-spacing: 0.05em; margin-bottom: 2rem; }
+    .field-group { margin-bottom: 1.4rem; }
+
+    label { display: block; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--forest); margin-bottom: 0.5rem; }
+
+    input[type="text"],
+    input[type="email"] {
+      width: 100%; padding: 0.85rem 1rem;
+      background: white; border: 1.5px solid var(--fog); border-radius: 6px;
+      font-family: 'Jost', sans-serif; font-size: 1rem; font-weight: 400; color: var(--charcoal);
+      outline: none; transition: border-color 0.2s;
+    }
+    input[type="text"]::placeholder,
+    input[type="email"]::placeholder { color: var(--mist); }
+    input[type="text"]:focus,
+    input[type="email"]:focus { border-color: var(--forest-light); }
+
+    .days-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+
+    .day-btn {
+      padding: 0.7rem 0.2rem; background: white; border: 1.5px solid var(--fog); border-radius: 6px;
+      font-family: 'Jost', sans-serif; font-size: 0.85rem; font-weight: 400; color: var(--charcoal);
+      cursor: pointer; text-align: center; transition: all 0.2s;
+    }
+    .day-btn:hover { border-color: var(--forest-light); color: var(--forest); }
+    .day-btn.selected { background: var(--forest); border-color: var(--forest); color: var(--cream); font-weight: 500; }
+    .day-btn .day-num { display: block; font-size: 1.15rem; font-weight: 500; line-height: 1; margin-bottom: 0.15rem; }
+    .day-btn .day-label { display: block; font-size: 0.68rem; letter-spacing: 0.05em; opacity: 0.75; }
+
+    .primary-btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; padding: 1rem;
+      background: var(--forest); color: var(--cream); border: none; border-radius: 6px;
+      font-family: 'Jost', sans-serif; font-size: 0.88rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-top: 1.5rem;
+      text-decoration: none;
+    }
+    .primary-btn:hover { background: var(--forest-deep); }
+    .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .confirm-card { background: white; border-radius: 10px; padding: 1.8rem; border: 1px solid var(--fog); text-align: center; margin-bottom: 1.5rem; }
+    .confirm-plant-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+    .confirm-plant-name { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--forest-deep); margin-bottom: 0.3rem; }
+    .confirm-days-text { font-size: 0.85rem; color: var(--bark-light); font-weight: 300; }
+    .confirm-days-num { font-size: 1.1rem; font-weight: 500; color: var(--forest); }
+
+    .secondary-btn {
+      display: block; width: 100%; padding: 0.85rem;
+      background: transparent; color: var(--bark-light); border: 1.5px solid var(--fog); border-radius: 6px;
+      font-family: 'Jost', sans-serif; font-size: 0.82rem; font-weight: 400;
+      letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; margin-top: 0.7rem;
+    }
+    .secondary-btn:hover { border-color: var(--bark-light); color: var(--charcoal); }
+
+    .done-circle {
+      width: 72px; height: 72px; border-radius: 50%; background: var(--forest);
+      margin: 0 auto 1.2rem; display: flex; align-items: center; justify-content: center;
+      animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .done-circle svg { width: 34px; height: 34px; stroke: var(--cream); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+    .done-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--forest-deep); text-align: center; margin-bottom: 0.4rem; }
+    .done-msg { font-size: 0.85rem; color: var(--bark-light); text-align: center; font-weight: 300; line-height: 1.6; margin-bottom: 1.5rem; }
+    .done-msg strong { color: var(--forest); font-weight: 500; }
+
+    footer { padding: 1.5rem; text-align: center; font-size: 0.68rem; color: var(--mist); letter-spacing: 0.1em; text-transform: uppercase; position: relative; z-index: 1; }
+    footer a { color: var(--bark-light); text-decoration: none; }
+
+    .error-msg { font-size: 0.75rem; color: #c0392b; margin-top: 0.4rem; display: none; }
+    .error-msg.visible { display: block; }
+
+    .no-id-warning {
+      background: #fff8e1; border: 1.5px solid var(--gold); border-radius: 8px;
+      padding: 1rem 1.2rem; margin-bottom: 1.5rem; font-size: 0.8rem; color: var(--bark); line-height: 1.5;
+    }
+    .no-id-warning strong { color: var(--bark); display: block; margin-bottom: 0.2rem; font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    /* ── Check email screen ── */
+    .email-icon {
+      font-size: 3rem; text-align: center; margin-bottom: 1rem;
+      animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .resend-link {
+      display: block; text-align: center; font-size: 0.8rem; color: var(--bark-light);
+      margin-top: 1.2rem; cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+    }
+    .resend-link:hover { color: var(--forest); }
+
+    /* ── History screen ── */
+    .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .history-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--forest-deep); }
+    .history-plant { font-size: 0.75rem; color: var(--bark-light); letter-spacing: 0.05em; margin-top: 0.1rem; }
+
+    .history-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.5rem; }
+    .history-item {
+      background: white; border: 1px solid var(--fog); border-radius: 8px;
+      padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 0.9rem;
+    }
+    .history-drop { font-size: 1.3rem; flex-shrink: 0; }
+    .history-date { font-size: 0.9rem; font-weight: 500; color: var(--charcoal); }
+    .history-sub { font-size: 0.75rem; color: var(--bark-light); font-weight: 300; margin-top: 0.1rem; }
+    .history-empty {
+      text-align: center; padding: 2rem 1rem;
+      font-size: 0.85rem; color: var(--mist); font-weight: 300; line-height: 1.6;
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 18px; height: 18px; border: 2px solid rgba(247,242,235,0.4);
+      border-top-color: var(--cream); border-radius: 50%;
+      animation: spin 0.7s linear infinite; display: inline-block; margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="forest-bar"></div>
+
+<header>
+  <div class="logo-wordmark">
+    <svg class="logo-trees" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="20,65 35,30 50,65" fill="#2d4a35" opacity="0.7"/>
+      <rect x="32" y="65" width="6" height="10" fill="#6b4c2a" opacity="0.8"/>
+      <polygon points="45,65 60,10 75,65" fill="#1e3326"/>
+      <rect x="57" y="65" width="6" height="12" fill="#6b4c2a"/>
+      <polygon points="70,65 85,32 100,65" fill="#2d4a35" opacity="0.7"/>
+      <rect x="82" y="65" width="6" height="10" fill="#6b4c2a" opacity="0.8"/>
+      <path d="M55,12 Q60,6 65,12" stroke="#4a7c59" stroke-width="1.5" fill="none" opacity="0.8"/>
+      <path d="M51,10 Q60,2 69,10" stroke="#4a7c59" stroke-width="1.5" fill="none" opacity="0.5"/>
+    </svg>
+    <div class="logo-boreal">Boreal</div>
+    <div class="logo-goods">Goods</div>
+    <div class="logo-divider">
+      <div class="logo-divider-line"></div>
+      <div class="logo-diamond"></div>
+      <div class="logo-divider-line"></div>
+    </div>
+    <div class="logo-tagline">Made in the North</div>
+  </div>
+</header>
+
+<main>
+  <div class="section-divider"></div>
+
+  <!-- SETUP SCREEN -->
+  <div id="setup-screen">
+    <div id="no-id-notice" class="no-id-warning" style="display:none;">
+      <strong>⚠ Tag not linked</strong>
+      This planter hasn't been assigned a unique ID. Ask your Boreal Goods retailer to re-program the tag.
+    </div>
+    <h1 class="screen-title">Let's set up your plant</h1>
+    <p class="screen-subtitle">Only takes a moment — every tap after this is one step.</p>
+
+    <div class="field-group">
+      <label>Plant name</label>
+      <input type="text" id="plant-name-input" placeholder="e.g. Pothos, Snake Plant…" maxlength="40">
+      <div class="error-msg" id="name-error">Please enter your plant's name.</div>
+    </div>
+
+    <div class="field-group">
+      <label>Water every…</label>
+      <div class="days-grid">
+        <button class="day-btn" data-days="1"><span class="day-num">1</span><span class="day-label">day</span></button>
+        <button class="day-btn" data-days="2"><span class="day-num">2</span><span class="day-label">days</span></button>
+        <button class="day-btn" data-days="3"><span class="day-num">3</span><span class="day-label">days</span></button>
+        <button class="day-btn" data-days="4"><span class="day-num">4</span><span class="day-label">days</span></button>
+        <button class="day-btn" data-days="5"><span class="day-num">5</span><span class="day-label">days</span></button>
+        <button class="day-btn" data-days="7"><span class="day-num">7</span><span class="day-label">days</span></button>
+        <button class="day-btn" data-days="10"><span class="day-num">10</span><span class="day-label">days</span></button>
+        <button class="day-btn" data-days="14"><span class="day-num">14</span><span class="day-label">days</span></button>
+      </div>
+      <div class="error-msg" id="days-error">Please select how often to water.</div>
+    </div>
+
+    <button class="primary-btn" id="setup-save-btn">Continue</button>
+  </div>
+
+  <!-- EMAIL SCREEN -->
+  <div id="email-screen">
+    <h1 class="screen-title">One last thing</h1>
+    <p class="screen-subtitle">Add your email to track watering history across all your plants.</p>
+
+    <div class="field-group">
+      <label>Email address</label>
+      <input type="email" id="email-input" placeholder="you@example.com" maxlength="255">
+      <div class="error-msg" id="email-error">Please enter a valid email address.</div>
+    </div>
+
+    <button class="primary-btn" id="send-link-btn">Send Sign-In Link</button>
+    <button class="secondary-btn" id="skip-email-btn">Skip — set reminder only</button>
+  </div>
+
+  <!-- CHECK EMAIL SCREEN -->
+  <div id="check-email-screen">
+    <div class="email-icon">📬</div>
+    <h1 class="screen-title">Check your email</h1>
+    <p class="screen-subtitle" id="check-email-subtitle">We sent a sign-in link to your inbox. It expires in 30 minutes.</p>
+    <span class="resend-link" id="resend-link">Didn't get it? Resend</span>
+  </div>
+
+  <!-- CONFIRM SCREEN (returning tap, authenticated) -->
+  <div id="confirm-screen">
+    <div class="confirm-card">
+      <div class="confirm-plant-icon">🌿</div>
+      <div class="confirm-plant-name" id="confirm-name">Pothos</div>
+      <p class="confirm-days-text">
+        Remind me in <span class="confirm-days-num" id="confirm-days">5</span> days
+      </p>
+    </div>
+    <button class="primary-btn" id="confirm-btn">Set Reminder &amp; Log Watering</button>
+    <button class="secondary-btn" id="history-btn">View watering history</button>
+    <button class="secondary-btn" id="change-btn">Change plant settings</button>
+  </div>
+
+  <!-- DONE SCREEN -->
+  <div id="done-screen">
+    <div style="text-align:center; padding-top: 0.5rem;">
+      <div class="done-circle">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 class="done-title">Reminder Set</h2>
+      <p class="done-msg">
+        You'll be reminded to water <strong id="done-plant-name">Pothos</strong><br>
+        in <strong id="done-days">5 days</strong>.
+      </p>
+      <button class="secondary-btn" id="done-history-btn" style="display:none;">View watering history</button>
+      <button class="secondary-btn" id="done-change-btn">Change plant settings</button>
+    </div>
+  </div>
+
+  <!-- HISTORY SCREEN -->
+  <div id="history-screen">
+    <div class="history-header">
+      <div>
+        <div class="history-title">Watering history</div>
+        <div class="history-plant" id="history-plant-label"></div>
+      </div>
+    </div>
+    <div class="history-list" id="history-list"></div>
+    <button class="secondary-btn" id="history-back-btn">← Back</button>
+  </div>
+
+</main>
+
+<footer>
+  <a href="https://borealgoods.ca" target="_blank">borealgoods.ca</a>
+  &nbsp;·&nbsp; Edmonton, Alberta
+</footer>
+
+<script>
+  const API = 'https://borealgoods.ca/api'; // adjust if your api folder is elsewhere
+
+  // ─── Detect Android
+  function isAndroid() { return /android/i.test(navigator.userAgent); }
+
+  // ─── URL params
+  const params    = new URLSearchParams(window.location.search);
+  const planterId = params.get('id')    || null;
+  const urlToken  = params.get('token') || null;
+
+  // ─── Storage helpers (per planter)
+  function sk(field) { return planterId ? `bg_${planterId}_${field}` : null; }
+  function save(f, v) { const k = sk(f); if (k) localStorage.setItem(k, v); }
+  function load(f)    { const k = sk(f); return k ? localStorage.getItem(k) : null; }
+  function clear()    {
+    ['name','days'].forEach(f => { const k = sk(f); if (k) localStorage.removeItem(k); });
+  }
+
+  // ─── Session (global, not per planter)
+  function getSession()       { return localStorage.getItem('bg_session'); }
+  function setSession(token)  { localStorage.setItem('bg_session', token); }
+
+  // ─── State
+  let selectedDays = null;
+  let pendingName  = null;
+  let pendingDays  = null;
+
+  // ─── Elements
+  const screens = {
+    setup:      document.getElementById('setup-screen'),
+    email:      document.getElementById('email-screen'),
+    checkEmail: document.getElementById('check-email-screen'),
+    confirm:    document.getElementById('confirm-screen'),
+    done:       document.getElementById('done-screen'),
+    history:    document.getElementById('history-screen'),
+  };
+
+  const $ = id => document.getElementById(id);
+
+  // ─── Screen switcher
+  function showScreen(name) {
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    screens[name].classList.add('active');
+  }
+
+  // ─── API helpers
+  async function apiPost(endpoint, body, sessionToken = null) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (sessionToken) headers['X-Session-Token'] = sessionToken;
+    const res = await fetch(`${API}/${endpoint}`, { method: 'POST', headers, body: JSON.stringify(body) });
+    return res.json();
+  }
+
+  async function apiGet(endpoint, sessionToken) {
+    const res = await fetch(`${API}/${endpoint}`, {
+      headers: { 'X-Session-Token': sessionToken }
+    });
+    return res.json();
+  }
+
+  // ─── Log a tap silently (best-effort, no UI feedback on failure)
+  async function logTap(name, days) {
+    const session = getSession();
+    if (!session || !planterId) return;
+    try {
+      await apiPost('log-tap.php', { planter_id: planterId, plant_name: name, days_freq: days }, session);
+    } catch (e) { /* silent */ }
+  }
+
+  // ─── Create calendar reminder
+  function createReminder(plantName, daysFromNow) {
+    const now          = new Date();
+    const reminderDate = new Date(now);
+    reminderDate.setDate(reminderDate.getDate() + daysFromNow);
+
+    if (isAndroid()) {
+      const startDate = fmtGCal(reminderDate);
+      const title     = encodeURIComponent(`Water your ${plantName}`);
+      const details   = encodeURIComponent(`Time to water your ${plantName}! Scan your Boreal Goods planter to log today's watering.`);
+      window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${startDate}&details=${details}`, '_blank');
+    } else {
+      const ics = [
+        'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Boreal Goods//Plant Reminder//EN',
+        'BEGIN:VEVENT',
+        `UID:${Date.now()}@borealgoods.ca`,
+        `DTSTAMP:${now.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z'}`,
+        `DTSTART;VALUE=DATE:${fmtICS(reminderDate)}`,
+        `DTEND;VALUE=DATE:${fmtICS(reminderDate)}`,
+        `SUMMARY:Water your ${plantName}`,
+        `DESCRIPTION:Time to water your ${plantName}! Scan your Boreal Goods planter to log today's watering.`,
+        'BEGIN:VALARM','TRIGGER:-PT0M','ACTION:DISPLAY',`DESCRIPTION:Water your ${plantName}`,'END:VALARM',
+        'END:VEVENT','END:VCALENDAR'
+      ].join('\r\n');
+      const url  = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+      const link = Object.assign(document.createElement('a'), { href: url, download: 'water-reminder.ics' });
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+  }
+
+  function fmtICS(d)  { return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`; }
+  function fmtGCal(d) { return fmtICS(d); }
+
+  // ─── Done screen
+  function showDone(name, days) {
+    $('done-plant-name').textContent = name;
+    $('done-days').textContent = days === 1 ? '1 day' : `${days} days`;
+    $('done-history-btn').style.display = getSession() ? 'block' : 'none';
+    showScreen('done');
+  }
+
+  // ─── History screen
+  async function showHistory() {
+    const session = getSession();
+    const name    = load('name') || 'your plant';
+    $('history-plant-label').textContent = name;
+    $('history-list').innerHTML = '<div class="history-empty">Loading…</div>';
+    showScreen('history');
+
+    if (!session || !planterId) {
+      $('history-list').innerHTML = '<div class="history-empty">Sign in to see your watering history.</div>';
+      return;
+    }
+
+    try {
+      const data = await apiGet(`get-history.php?planter_id=${encodeURIComponent(planterId)}`, session);
+      if (!data.ok || !data.history.length) {
+        $('history-list').innerHTML = '<div class="history-empty">No waterings logged yet. Tap your planter after watering to start your history.</div>';
+        return;
+      }
+      $('history-list').innerHTML = data.history.map(h => {
+        const d    = new Date(h.tapped_at);
+        const date = d.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' });
+        const time = d.toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit' });
+        return `
+          <div class="history-item">
+            <span class="history-drop">💧</span>
+            <div>
+              <div class="history-date">${date}</div>
+              <div class="history-sub">${time} · every ${h.days_freq} day${h.days_freq === 1 ? '' : 's'}</div>
+            </div>
+          </div>`;
+      }).join('');
+    } catch (e) {
+      $('history-list').innerHTML = '<div class="history-empty">Couldn't load history. Try again later.</div>';
+    }
+  }
+
+  // ─── Day buttons
+  document.querySelectorAll('.day-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedDays = parseInt(btn.dataset.days);
+      $('days-error').classList.remove('visible');
+    });
+  });
+
+  // ─── Setup → next
+  $('setup-save-btn').addEventListener('click', () => {
+    const name = $('plant-name-input').value.trim();
+    let valid  = true;
+    if (!name)         { $('name-error').classList.add('visible'); valid = false; }
+    else               { $('name-error').classList.remove('visible'); }
+    if (!selectedDays) { $('days-error').classList.add('visible'); valid = false; }
+    else               { $('days-error').classList.remove('visible'); }
+    if (!valid) return;
+
+    pendingName = name;
+    pendingDays = selectedDays;
+
+    // If already signed in, skip straight to reminder + done
+    if (getSession()) {
+      save('name', name); save('days', selectedDays);
+      createReminder(name, selectedDays);
+      logTap(name, selectedDays);
+      showDone(name, selectedDays);
+    } else {
+      showScreen('email');
+    }
+  });
+
+  // ─── Email → send magic link
+  $('send-link-btn').addEventListener('click', async () => {
+    const email = $('email-input').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      $('email-error').classList.add('visible'); return;
+    }
+    $('email-error').classList.remove('visible');
+
+    const btn = $('send-link-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Sending…';
+
+    try {
+      const data = await apiPost('request-token.php', { email, planter_id: planterId || 'none' });
+      if (data.ok) {
+        $('check-email-subtitle').textContent = `We sent a sign-in link to ${email}. It expires in 30 minutes.`;
+        showScreen('checkEmail');
+      } else {
+        $('email-error').textContent = data.error || 'Something went wrong. Try again.';
+        $('email-error').classList.add('visible');
+      }
+    } catch (e) {
+      $('email-error').textContent = 'Network error. Check your connection and try again.';
+      $('email-error').classList.add('visible');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = 'Send Sign-In Link';
+  });
+
+  // ─── Resend link
+  $('resend-link').addEventListener('click', () => {
+    showScreen('email');
+  });
+
+  // ─── Skip email
+  $('skip-email-btn').addEventListener('click', () => {
+    save('name', pendingName); save('days', pendingDays);
+    createReminder(pendingName, pendingDays);
+    showDone(pendingName, pendingDays);
+  });
+
+  // ─── Confirm screen (returning tap)
+  $('confirm-btn').addEventListener('click', async () => {
+    const name = load('name');
+    const days = parseInt(load('days'));
+    createReminder(name, days);
+    logTap(name, days);
+    showDone(name, days);
+  });
+
+  $('history-btn').addEventListener('click', showHistory);
+  $('done-history-btn').addEventListener('click', showHistory);
+  $('history-back-btn').addEventListener('click', () => {
+    const savedName = load('name');
+    const savedDays = load('days');
+    if (savedName && savedDays) {
+      $('confirm-name').textContent = savedName;
+      $('confirm-days').textContent = savedDays;
+      showScreen('confirm');
+    } else {
+      showScreen('setup');
+    }
+  });
+
+  // ─── Change / reset
+  $('change-btn').addEventListener('click', resetToSetup);
+  $('done-change-btn').addEventListener('click', resetToSetup);
+
+  function resetToSetup() {
+    clear();
+    selectedDays = pendingName = pendingDays = null;
+    $('plant-name-input').value = '';
+    $('email-input').value = '';
+    document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+    showScreen('setup');
+  }
+
+  // ─── Magic link token handling (arriving from email)
+  async function handleMagicToken(token) {
+    try {
+      const data = await apiPost('verify-token.php', { token });
+      if (data.ok) {
+        setSession(data.session_token);
+        // If we have pending setup data, save + finish
+        if (pendingName && pendingDays) {
+          save('name', pendingName); save('days', pendingDays);
+          createReminder(pendingName, pendingDays);
+          logTap(pendingName, pendingDays);
+          showDone(pendingName, pendingDays);
+        } else {
+          // Clean URL and re-init normally (strips ?token= from address bar)
+          const clean = new URL(window.location.href);
+          clean.searchParams.delete('token');
+          window.history.replaceState({}, '', clean.toString());
+          init();
+        }
+      } else {
+        // Token bad/expired — show setup
+        showScreen('setup');
+      }
+    } catch (e) {
+      showScreen('setup');
+    }
+  }
+
+  // ─── Init
+  function init() {
+    if (!planterId) {
+      $('no-id-notice').style.display = 'block';
+      showScreen('setup');
+      return;
+    }
+    const savedName = load('name');
+    const savedDays = load('days');
+    if (savedName && savedDays) {
+      $('confirm-name').textContent = savedName;
+      $('confirm-days').textContent = savedDays;
+      showScreen('confirm');
+    } else {
+      showScreen('setup');
+    }
+  }
+
+  // ─── Entry point: check for magic token first
+  if (urlToken) {
+    handleMagicToken(urlToken);
+  } else {
+    init();
+  }
+</script>
+</body>
+</html>
