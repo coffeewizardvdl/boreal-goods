@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boreal Goods — Made in the North</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest: #2d4a35;
+      --forest-deep: #2a5238;
+      --forest-light: #4a7c59;
+      --bark: #6b4c2a;
+      --bark-light: #a07850;
+      --cream: #f7f2eb;
+      --fog: #e8e0d4;
+      --charcoal: #3f3c38;
+      --mist: #c8d4c0;
+      --gold: #c9a84c;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background-color: var(--cream);
+      color: var(--charcoal);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise texture overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Atmospheric background ── */
+    .bg-gradient {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, #c8d4c030 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 0% 100%, #e8e0d440 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 100% 50%, #d4e4cc15 0%, transparent 60%),
+        var(--cream);
+      z-index: 0;
+    }
+
+    /* ── Forest silhouette ── */
+    .forest-silhouette {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 35%;
+      z-index: 0;
+      opacity: 0.12;
+    }
+
+    /* ── Stars ── */
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--forest);
+      border-radius: 50%;
+      animation: twinkle var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: var(--min-op, 0.2); transform: scale(1); }
+      50% { opacity: var(--max-op, 0.7); transform: scale(1.3); }
+    }
+
+    /* ── Gold top bar ── */
+    .gold-bar {
+      position: relative;
+      z-index: 10;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    /* ── Layout ── */
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 2.5rem 2rem 0;
+      text-align: center;
+      animation: fadeDown 0.8s ease forwards;
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-trees {
+      width: 72px;
+      height: auto;
+      margin-bottom: 0.6rem;
+      opacity: 0.9;
+      filter: drop-shadow(0 4px 12px rgba(74, 124, 89, 0.3));
+    }
+
+    .logo-boreal {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: 0.22em;
+      color: var(--forest-deep);
+      text-transform: uppercase;
+    }
+
+    .logo-goods {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.75rem;
+      letter-spacing: 0.4em;
+      color: var(--bark-light);
+      text-transform: uppercase;
+      margin-top: 0.1rem;
+    }
+
+    .logo-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 0.4rem 0;
+    }
+    .logo-divider-line { width: 28px; height: 1px; background: var(--bark-light); opacity: 0.5; }
+    .logo-diamond { width: 4px; height: 4px; background: var(--gold); transform: rotate(45deg); }
+    .logo-tagline {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.58rem;
+      letter-spacing: 0.32em;
+      color: var(--bark);
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem 2rem;
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .coming-soon-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(45, 74, 53, 0.07);
+      border: 1px solid rgba(45, 74, 53, 0.2);
+      border-radius: 100px;
+      padding: 0.35rem 0.9rem;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--forest-light);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(74,124,89,0.3); }
+      50% { opacity: 0.8; transform: scale(1.1); box-shadow: 0 0 0 5px rgba(74,124,89,0); }
+    }
+    .badge-text {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--forest);
+      font-weight: 400;
+    }
+
+    .hero-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 8vw, 3.6rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--forest-deep);
+      margin-bottom: 0.5rem;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+    .hero-headline em {
+      font-style: italic;
+      color: var(--mist);
+    }
+
+    .hero-sub {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--forest);
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+
+    .section-divider {
+      width: 50px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--forest-light), transparent);
+      margin: 0 auto 1.5rem;
+      animation: fadeUp 0.8s 0.45s ease both;
+    }
+
+    .hero-body {
+      font-size: 0.9rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--bark);
+      max-width: 400px;
+      margin: 0 auto 2.5rem;
+      animation: fadeUp 0.8s 0.5s ease both;
+    }
+
+    /* ── Email form ── */
+    .email-form-wrap {
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      animation: fadeUp 0.8s 0.6s ease both;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--forest);
+      margin-bottom: 0.6rem;
+      text-align: left;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .email-input {
+      flex: 1;
+      padding: 0.9rem 1.1rem;
+      background: white;
+      border: 1.5px solid var(--fog);
+      border-radius: 6px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--charcoal);
+      outline: none;
+      transition: border-color 0.25s, background 0.25s;
+    }
+    .email-input::placeholder { color: var(--mist); }
+    .email-input:focus {
+      border-color: var(--forest-light);
+      background: rgba(247, 242, 235, 0.09);
+    }
+
+    .submit-btn {
+      padding: 0.9rem 1.4rem;
+      background: var(--forest);
+      border: 1.5px solid var(--forest-light);
+      border-radius: 6px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--cream);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .submit-btn:hover {
+      background: var(--forest-light);
+      border-color: var(--forest-light);
+      transform: translateY(-1px);
+    }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .form-privacy {
+      font-size: 0.65rem;
+      color: var(--bark-light);
+      margin-top: 0.7rem;
+      letter-spacing: 0.04em;
+    }
+
+    .form-error {
+      font-size: 0.75rem;
+      color: #e07070;
+      margin-top: 0.5rem;
+      display: none;
+    }
+    .form-error.visible { display: block; }
+
+    /* ── Success state ── */
+    .success-card {
+      display: none;
+      text-align: center;
+      animation: fadeUp 0.5s ease forwards;
+      padding: 1.5rem;
+      background: rgba(45, 74, 53, 0.07);
+      border: 1px solid rgba(45, 74, 53, 0.15);
+      border-radius: 10px;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .success-card.visible { display: block; }
+
+    .success-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--forest);
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    .success-icon svg {
+      width: 22px; height: 22px;
+      stroke: var(--cream); stroke-width: 2.5;
+      fill: none; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      color: var(--forest-deep);
+      margin-bottom: 0.35rem;
+    }
+
+    .success-msg {
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: var(--bark-light);
+      line-height: 1.6;
+    }
+
+    /* ── Features strip ── */
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      padding: 0 1.5rem 3rem;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s 0.7s ease both;
+    }
+
+    .feature-item {
+      text-align: center;
+      max-width: 120px;
+    }
+
+    .feature-icon {
+      font-size: 1.4rem;
+      margin-bottom: 0.4rem;
+      display: block;
+      filter: grayscale(0.2);
+    }
+
+    .feature-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bark-light);
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    /* ── Footer ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 1.5rem;
+      text-align: center;
+      border-top: 1px solid var(--fog);
+    }
+    footer p {
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--bark-light);
+    }
+    footer a { color: var(--forest); text-decoration: none; opacity: 0.8; }
+    footer a:hover { opacity: 1; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .form-row { flex-direction: column; }
+      .submit-btn { width: 100%; }
+      .features { gap: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-gradient"></div>
+<div class="stars" id="stars"></div>
+
+<!-- Forest silhouette SVG -->
+<svg class="forest-silhouette" viewBox="0 0 1440 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
+  <path d="M0,300 L0,220 L30,200 L60,220 L60,180 L90,150 L120,180 L120,200 L150,170 L180,140 L210,170 L210,190 L240,160 L270,120 L300,160 L300,180 L330,145 L360,100 L390,145 L390,165 L420,130 L450,85 L480,130 L480,155 L510,120 L540,75 L570,120 L570,140 L600,110 L630,65 L660,110 L660,130 L690,95 L720,50 L750,95 L750,115 L780,80 L810,35 L840,80 L840,100 L870,70 L900,30 L930,70 L930,90 L960,60 L990,20 L1020,60 L1020,80 L1050,50 L1080,10 L1110,50 L1110,70 L1140,45 L1170,15 L1200,45 L1200,65 L1230,35 L1260,5 L1290,35 L1290,55 L1320,30 L1350,60 L1380,90 L1410,120 L1440,150 L1440,300 Z" fill="#2d4a35"/>
+  <path d="M0,300 L0,250 L40,230 L80,250 L80,210 L120,180 L160,210 L160,230 L200,200 L240,165 L280,200 L280,215 L320,185 L360,145 L400,185 L400,200 L440,170 L480,130 L520,170 L520,190 L560,160 L600,120 L640,160 L640,175 L680,148 L720,110 L760,148 L760,165 L800,140 L840,105 L880,140 L880,155 L920,130 L960,95 L1000,130 L1000,145 L1040,120 L1080,85 L1120,120 L1120,138 L1160,115 L1200,80 L1240,115 L1240,132 L1280,110 L1320,160 L1360,200 L1400,240 L1440,270 L1440,300 Z" fill="#3a6b4a"/>
+</svg>
+
+<div class="gold-bar"></div>
+
+<div class="page-wrap">
+
+  <header>
+    <div>
+      <svg class="logo-trees" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="20,65 35,30 50,65" fill="#2d4a35" opacity="0.7"/>
+        <rect x="32" y="65" width="6" height="10" fill="#6b4c2a" opacity="0.8"/>
+        <polygon points="45,65 60,10 75,65" fill="#1e3326"/>
+        <rect x="57" y="65" width="6" height="12" fill="#6b4c2a"/>
+        <polygon points="70,65 85,32 100,65" fill="#2d4a35" opacity="0.7"/>
+        <rect x="82" y="65" width="6" height="10" fill="#6b4c2a" opacity="0.8"/>
+        <path d="M55,12 Q60,6 65,12" stroke="#c9a84c" stroke-width="1.5" fill="none" opacity="0.9"/>
+        <path d="M51,10 Q60,2 69,10" stroke="#c9a84c" stroke-width="1.5" fill="none" opacity="0.5"/>
+      </svg>
+      <div class="logo-boreal">Boreal</div>
+      <div class="logo-goods">Goods</div>
+      <div class="logo-divider">
+        <div class="logo-divider-line"></div>
+        <div class="logo-diamond"></div>
+        <div class="logo-divider-line"></div>
+      </div>
+      <div class="logo-tagline">Made in the North</div>
+    </div>
+  </header>
+
+  <main class="hero">
+
+    <div class="coming-soon-badge">
+      <div class="badge-dot"></div>
+      <span class="badge-text">Coming Soon</span>
+    </div>
+
+    <h1 class="hero-headline">
+      Home goods with a<br><em>quiet intelligence</em>
+    </h1>
+
+    <p class="hero-sub">3D-crafted in Edmonton, Alberta</p>
+
+    <div class="section-divider"></div>
+
+    <p class="hero-body">
+      We make small-batch home goods with embedded NFC technology — 
+      thoughtfully designed objects that do a little more than they look like they do.
+    </p>
+
+    <!-- Email signup -->
+    <div class="email-form-wrap" id="form-wrap">
+      <label class="form-label" for="email-input">Be first to know when we launch</label>
+      <div class="form-row">
+        <input
+          type="email"
+          id="email-input"
+          class="email-input"
+          placeholder="your@email.com"
+          autocomplete="email"
+        >
+        <button class="submit-btn" id="submit-btn">Notify Me</button>
+      </div>
+      <p class="form-privacy">No spam. Just a single launch email when we're ready.</p>
+      <div class="form-error" id="form-error">Please enter a valid email address.</div>
+    </div>
+
+    <!-- Success state -->
+    <div class="success-card" id="success-card">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="success-title">You're on the list</div>
+      <p class="success-msg">We'll reach out as soon as Boreal Goods goes live.<br>Good things take time — like trees.</p>
+    </div>
+
+  </main>
+
+  <div class="features">
+    <div class="feature-item">
+      <span class="feature-icon">🌲</span>
+      <div class="feature-label">Small-batch<br>crafted</div>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">📡</span>
+      <div class="feature-label">NFC-enabled<br>smart goods</div>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">🍁</span>
+      <div class="feature-label">Made in<br>Edmonton</div>
+    </div>
+  </div>
+
+  <footer>
+    <p>
+      <a href="https://borealgoods.ca">borealgoods.ca</a>
+      &nbsp;·&nbsp; Edmonton, Alberta &nbsp;·&nbsp; &copy; 2025 Boreal Goods
+    </p>
+  </footer>
+
+</div>
+
+<script>
+  // ── Generate stars
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 60; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.cssText = `
+      top: ${Math.random() * 65}%;
+      left: ${Math.random() * 100}%;
+      --dur: ${2 + Math.random() * 3}s;
+      --delay: ${Math.random() * 4}s;
+      --min-op: ${0.1 + Math.random() * 0.2};
+      --max-op: ${0.5 + Math.random() * 0.5};
+      width: ${Math.random() > 0.8 ? 3 : 2}px;
+      height: ${Math.random() > 0.8 ? 3 : 2}px;
+    `;
+    starsContainer.appendChild(star);
+  }
+
+  // ── Email form
+  const emailInput = document.getElementById('email-input');
+  const submitBtn  = document.getElementById('submit-btn');
+  const formError  = document.getElementById('form-error');
+  const formWrap   = document.getElementById('form-wrap');
+  const successCard = document.getElementById('success-card');
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  }
+
+  submitBtn.addEventListener('click', () => {
+    const email = emailInput.value.trim();
+
+    if (!isValidEmail(email)) {
+      formError.classList.add('visible');
+      emailInput.focus();
+      return;
+    }
+
+    formError.classList.remove('visible');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '…';
+
+    // ── Kit (ConvertKit) form submission
+    fetch('https://app.kit.com/forms/9338084/subscriptions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email_address: email })
+    })
+    .then(res => {
+      if (res.ok || res.status === 200) {
+        showSuccess();
+      } else {
+        throw new Error('Submission failed');
+      }
+    })
+    .catch(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Notify Me';
+      formError.textContent = 'Something went wrong — please try again.';
+      formError.classList.add('visible');
+    });
+  });
+
+  emailInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitBtn.click();
+  });
+
+  emailInput.addEventListener('input', () => {
+    formError.classList.remove('visible');
+  });
+
+  function showSuccess() {
+    formWrap.style.display = 'none';
+    successCard.classList.add('visible');
+  }
+</script>
+
+</body>
+</html>
