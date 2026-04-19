@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boreal Goods — Plant Watering Reminder</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1e3326">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Boreal">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -71,14 +77,8 @@
       width: 100%;
     }
 
-    /* ── Screens ── */
-    #setup-screen, #confirm-screen, #done-screen, #magic-sent-screen {
-      display: none;
-      animation: fadeUp 0.4s ease forwards;
-    }
-    #setup-screen.active, #confirm-screen.active, #done-screen.active, #magic-sent-screen.active {
-      display: block;
-    }
+    #setup-screen, #confirm-screen, #done-screen { display: none; animation: fadeUp 0.4s ease forwards; }
+    #setup-screen.active, #confirm-screen.active, #done-screen.active { display: block; }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(12px); }
@@ -91,14 +91,14 @@
 
     label { display: block; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--forest); margin-bottom: 0.5rem; }
 
-    input[type="text"], input[type="email"] {
+    input[type="text"] {
       width: 100%; padding: 0.85rem 1rem;
       background: white; border: 1.5px solid var(--fog); border-radius: 6px;
       font-family: 'Jost', sans-serif; font-size: 1rem; font-weight: 400; color: var(--charcoal);
       outline: none; transition: border-color 0.2s;
     }
-    input[type="text"]::placeholder, input[type="email"]::placeholder { color: var(--mist); }
-    input[type="text"]:focus, input[type="email"]:focus { border-color: var(--forest-light); }
+    input[type="text"]::placeholder { color: var(--mist); }
+    input[type="text"]:focus { border-color: var(--forest-light); }
 
     .days-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
 
@@ -121,7 +121,6 @@
       text-decoration: none;
     }
     .primary-btn:hover { background: var(--forest-deep); }
-    .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .confirm-card { background: white; border-radius: 10px; padding: 1.8rem; border: 1px solid var(--fog); text-align: center; margin-bottom: 1.5rem; }
     .confirm-plant-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
@@ -137,7 +136,6 @@
     }
     .secondary-btn:hover { border-color: var(--bark-light); color: var(--charcoal); }
 
-    /* ── Done screen ── */
     .done-circle {
       width: 72px; height: 72px; border-radius: 50%; background: var(--forest);
       margin: 0 auto 1.2rem; display: flex; align-items: center; justify-content: center;
@@ -150,7 +148,6 @@
     .done-msg { font-size: 0.85rem; color: var(--bark-light); text-align: center; font-weight: 300; line-height: 1.6; margin-bottom: 1.5rem; }
     .done-msg strong { color: var(--forest); font-weight: 500; }
 
-    /* ── Care tip ── */
     .care-tip {
       background: #f0f5f1; border: 1px solid var(--mist);
       border-left: 3px solid var(--forest-light); border-radius: 6px;
@@ -158,165 +155,42 @@
       font-weight: 300; line-height: 1.55; margin-bottom: 1.2rem; display: none;
     }
     .care-tip.visible { display: block; }
-    .care-tip-label { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--forest-light); display: block; margin-bottom: 0.25rem; }
-
-    /* ── History nudge (opt-in email prompt) ── */
-    .history-nudge {
-      background: white;
-      border: 1px solid var(--fog);
-      border-radius: 10px;
-      padding: 1.2rem 1.4rem;
-      margin-bottom: 1rem;
-      display: none;
-      animation: fadeUp 0.5s ease 0.3s both;
-    }
-    .history-nudge.visible { display: block; }
-
-    .history-nudge-header {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 0.5rem;
+    .care-tip-label {
+      font-size: 0.68rem; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--forest-light); display: block; margin-bottom: 0.25rem;
     }
 
-    .history-nudge-icon {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: #f0f5f1;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .history-nudge-icon svg {
-      width: 16px; height: 16px;
-      stroke: var(--forest-light); stroke-width: 2;
-      fill: none; stroke-linecap: round; stroke-linejoin: round;
-    }
-
-    .history-nudge-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 0.95rem;
-      color: var(--forest-deep);
-      font-weight: 600;
-    }
-
-    .history-nudge-body {
-      font-size: 0.78rem;
-      color: var(--bark);
-      font-weight: 300;
-      line-height: 1.55;
-      margin-bottom: 0.9rem;
-    }
-
-    .nudge-email-row {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .nudge-email-input {
-      flex: 1;
-      padding: 0.7rem 0.85rem;
-      background: var(--cream);
-      border: 1.5px solid var(--fog);
-      border-radius: 6px;
-      font-family: 'Jost', sans-serif;
-      font-size: 0.88rem;
-      color: var(--charcoal);
-      outline: none;
-      transition: border-color 0.2s;
-      min-width: 0;
-    }
-    .nudge-email-input::placeholder { color: var(--mist); }
-    .nudge-email-input:focus { border-color: var(--forest-light); }
-
-    .nudge-submit-btn {
-      padding: 0.7rem 1rem;
-      background: var(--forest);
-      color: var(--cream);
-      border: none;
-      border-radius: 6px;
-      font-family: 'Jost', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .nudge-submit-btn:hover { background: var(--forest-deep); }
-    .nudge-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    .nudge-dismiss {
-      display: block;
-      text-align: center;
-      margin-top: 0.6rem;
-      font-size: 0.72rem;
-      color: var(--mist);
-      cursor: pointer;
-      letter-spacing: 0.05em;
-      background: none;
-      border: none;
-      font-family: 'Jost', sans-serif;
-      width: 100%;
-      padding: 0.2rem;
-    }
-    .nudge-dismiss:hover { color: var(--bark-light); }
-
-    .nudge-error { font-size: 0.72rem; color: #c0392b; margin-top: 0.4rem; display: none; }
-    .nudge-error.visible { display: block; }
-
-    /* ── Nudge sent confirmation ── */
-    .nudge-sent {
-      display: none;
-      text-align: center;
-      padding: 0.5rem 0;
-      animation: fadeUp 0.3s ease forwards;
-    }
-    .nudge-sent.visible { display: block; }
-    .nudge-sent-icon { font-size: 1.4rem; margin-bottom: 0.3rem; }
-    .nudge-sent-text { font-size: 0.8rem; color: var(--forest); font-weight: 300; line-height: 1.5; }
-    .nudge-sent-text strong { font-weight: 500; }
-
-    /* ── Signed-in indicator ── */
-    .signed-in-note {
-      display: none;
-      text-align: center;
-      font-size: 0.72rem;
-      color: var(--forest-light);
-      letter-spacing: 0.05em;
-      margin-bottom: 0.8rem;
-      font-weight: 300;
-    }
-    .signed-in-note.visible { display: block; }
-
-    /* ── Magic sent screen ── */
-    .magic-card {
-      background: white;
-      border-radius: 12px;
-      padding: 2.2rem 1.8rem;
-      border: 1px solid var(--fog);
-      text-align: center;
-    }
-    .magic-icon { font-size: 2.4rem; margin-bottom: 1rem; }
-    .magic-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--forest-deep); margin-bottom: 0.5rem; }
-    .magic-body { font-size: 0.85rem; color: var(--bark); font-weight: 300; line-height: 1.65; }
-    .magic-body strong { color: var(--forest); font-weight: 500; }
-
-    /* ── Misc ── */
     footer { padding: 1.5rem; text-align: center; font-size: 0.68rem; color: var(--mist); letter-spacing: 0.1em; text-transform: uppercase; position: relative; z-index: 1; }
     footer a { color: var(--bark-light); text-decoration: none; }
 
     .error-msg { font-size: 0.75rem; color: #c0392b; margin-top: 0.4rem; display: none; }
     .error-msg.visible { display: block; }
 
-    /* ── Autocomplete ── */
+    .no-id-warning {
+      background: #fff8e1; border: 1.5px solid var(--gold); border-radius: 8px;
+      padding: 1rem 1.2rem; margin-bottom: 1.5rem; font-size: 0.8rem; color: var(--bark); line-height: 1.5;
+    }
+    .no-id-warning strong { color: var(--bark); display: block; margin-bottom: 0.2rem; font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    .calendar-nudge {
+      display: none; background: #f0f5f1; border: 1px solid var(--mist);
+      border-left: 3px solid var(--forest-light); border-radius: 6px;
+      padding: 0.8rem 1rem; font-size: 0.8rem; color: var(--forest);
+      font-weight: 300; line-height: 1.6; margin-bottom: 1.2rem; text-align: left;
+    }
+    .calendar-nudge.visible { display: block; }
+    .calendar-nudge-label { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--forest-light); display: block; margin-bottom: 0.25rem; }
+    .calendar-nudge strong { font-weight: 500; color: var(--forest-deep); }
+
     .input-wrap { position: relative; }
+
     .autocomplete-list {
       position: absolute; top: calc(100% + 4px); left: 0; right: 0;
       background: white; border: 1.5px solid var(--forest-light); border-radius: 6px;
       box-shadow: 0 4px 16px rgba(30,51,38,0.10); z-index: 10; overflow: hidden; display: none;
     }
     .autocomplete-list.visible { display: block; }
+
     .autocomplete-item {
       padding: 0.75rem 1rem; font-family: 'Jost', sans-serif; font-size: 0.9rem;
       font-weight: 400; color: var(--charcoal); cursor: pointer;
@@ -325,13 +199,10 @@
     }
     .autocomplete-item:last-child { border-bottom: none; }
     .autocomplete-item:hover, .autocomplete-item.active { background: #f0f5f1; }
-    .autocomplete-item-days { font-size: 0.72rem; color: var(--forest-light); font-weight: 500; letter-spacing: 0.04em; white-space: nowrap; margin-left: 0.5rem; }
-
-    .no-id-warning {
-      background: #fff8e1; border: 1.5px solid var(--gold); border-radius: 8px;
-      padding: 1rem 1.2rem; margin-bottom: 1.5rem; font-size: 0.8rem; color: var(--bark); line-height: 1.5;
+    .autocomplete-item-days {
+      font-size: 0.72rem; color: var(--forest-light); font-weight: 500;
+      letter-spacing: 0.04em; white-space: nowrap; margin-left: 0.5rem;
     }
-    .no-id-warning strong { color: var(--bark); display: block; margin-bottom: 0.2rem; font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase; }
   </style>
 </head>
 <body>
@@ -424,59 +295,17 @@
         You'll be reminded to water <strong id="done-plant-name">Pothos</strong><br>
         in <strong id="done-days">5 days</strong>.
       </p>
-
-      <!-- Care tip (shown if plant matched database) -->
       <div class="care-tip" id="done-care-tip">
         <span class="care-tip-label">Care tip</span>
         <span id="done-care-tip-text"></span>
       </div>
-
-      <!-- Signed-in indicator (shown if already authenticated) -->
-      <p class="signed-in-note" id="signed-in-note">✓ Tap logged to your history</p>
-
-      <!-- History nudge (shown if NOT authenticated, NOT dismissed) -->
-      <div class="history-nudge" id="history-nudge">
-        <div class="history-nudge-header">
-          <div class="history-nudge-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
-          </div>
-          <div class="history-nudge-title">Track your waterings</div>
-        </div>
-
-        <!-- Form state -->
-        <div id="nudge-form-state">
-          <p class="history-nudge-body">Get a watering history for this plant — just enter your email once and every tap is logged automatically.</p>
-          <div class="nudge-email-row">
-            <input type="email" class="nudge-email-input" id="nudge-email" placeholder="your@email.com" autocomplete="email" inputmode="email">
-            <button class="nudge-submit-btn" id="nudge-submit-btn">Send link</button>
-          </div>
-          <div class="nudge-error" id="nudge-error">Please enter a valid email.</div>
-          <button class="nudge-dismiss" id="nudge-dismiss-btn">No thanks</button>
-        </div>
-
-        <!-- Sent state -->
-        <div class="nudge-sent" id="nudge-sent-state">
-          <div class="nudge-sent-icon">✉️</div>
-          <p class="nudge-sent-text">Check your inbox — <strong>a sign-in link is on its way</strong>.<br>Every tap after that is automatic.</p>
-        </div>
+      <div class="calendar-nudge" id="calendar-nudge">
+        <span class="calendar-nudge-label">Adding to Calendar</span>
+        A calendar prompt will appear in a moment. Tap <strong>Add to Calendar</strong> at the bottom — not the checkmark at the top.
       </div>
-
       <button class="secondary-btn" id="done-change-btn">Change plant settings</button>
     </div>
   </div>
-
-  <!-- MAGIC LINK SENT SCREEN (full page, shown after verifying token from email) -->
-  <div id="magic-sent-screen">
-    <div class="magic-card">
-      <div class="magic-icon">🌿</div>
-      <h2 class="magic-title">You're signed in</h2>
-      <p class="magic-body">Your waterings will now be logged automatically every time you tap. <strong>No app needed — just tap and go.</strong></p>
-    </div>
-  </div>
-
 </main>
 
 <footer>
@@ -485,7 +314,6 @@
 </footer>
 
 <script>
-  // ─── Plant database
   const PLANTS = [
     { name: 'Pothos',             days: 7,  tip: 'Let the soil dry out between waterings — it\'s more forgiving than you think.' },
     { name: 'Snake Plant',        days: 14, tip: 'One of the most drought-tolerant houseplants. Less water is almost always better.' },
@@ -524,87 +352,29 @@
     { name: 'Lettuce',            days: 2,  tip: 'Shallow roots mean frequent watering. Keep soil consistently moist.' },
     { name: 'Pepper',             days: 3,  tip: 'Water deeply and allow top inch to dry slightly between waterings.' },
     { name: 'Cucumber',           days: 2,  tip: 'Needs consistent moisture. Irregular watering leads to bitter fruit.' },
-    { name: 'Spinach',            days: 2,  tip: 'Prefers cool, moist soil. Water regularly and keep out of intense heat.' },
-    { name: 'Kale',               days: 3,  tip: 'Drought-tolerant but produces best with consistent moisture.' },
     { name: 'Lavender',           days: 10, tip: 'Drought-tolerant once established. Overwatering is the #1 killer.' },
     { name: 'Geranium',           days: 5,  tip: 'Allow soil to dry between waterings. Deadhead regularly for more blooms.' },
     { name: 'Begonia',            days: 5,  tip: 'Keep soil lightly moist. Avoid wetting the leaves to prevent disease.' },
-    { name: 'Petunia',            days: 3,  tip: 'Thirsty plants — check daily in hot weather. Feed regularly for best blooms.' },
-    { name: 'Marigold',           days: 5,  tip: 'Water at the base to avoid mildew. Allow soil to dry slightly between waterings.' },
-    { name: 'Sweet Peas',         days: 3,  tip: 'Keep soil consistently moist, especially during flowering. They hate drying out.' },
-    { name: 'Potatoes',           days: 3,  tip: 'Water regularly once plants flower — that\'s when tubers are forming and need it most.' },
-    { name: 'Tulips',             days: 5,  tip: 'Water after planting then sparingly until shoots appear. Avoid waterlogging the bulbs.' },
     { name: 'Umbrella Plant',     days: 7,  tip: 'Water when the top inch of soil is dry. Tolerates some neglect.' },
     { name: 'Prayer Plant',       days: 5,  tip: 'Keep soil consistently moist and provide high humidity for best results.' },
-    { name: 'Croton',             days: 5,  tip: 'Likes consistently moist soil. Drops leaves if it dries out or gets cold drafts.' },
-    { name: 'Bromeliad',          days: 7,  tip: 'Water into the central cup, not the soil. Empty and refill the cup weekly.' },
-    { name: 'Air Plant',          days: 7,  tip: 'Mist 2–3 times a week or soak in water for 20 minutes weekly. Shake off excess.' },
-    { name: 'Ponytail Palm',      days: 14, tip: 'Stores water in its trunk — one of the most drought-tolerant houseplants.' },
     { name: 'Money Tree',         days: 7,  tip: 'Water thoroughly then allow soil to dry out completely before watering again.' },
-    { name: 'Bamboo Palm',        days: 5,  tip: 'Keep soil evenly moist. Mist leaves occasionally to maintain humidity.' },
+    { name: 'Air Plant',          days: 7,  tip: 'Mist 2–3 times a week or soak for 20 minutes weekly. Shake off excess.' },
+    { name: 'Ponytail Palm',      days: 14, tip: 'Stores water in its trunk — one of the most drought-tolerant houseplants.' },
     { name: 'Dieffenbachia',      days: 7,  tip: 'Water when the top inch of soil is dry. Avoid cold water — use room temperature.' },
-    { name: 'Zucchini',           days: 2,  tip: 'Thirsty plants — water deeply and consistently. Inconsistent moisture causes bitter fruit.' },
-    { name: 'Green Beans',        days: 3,  tip: 'Water at the base to avoid fungal issues. Consistent moisture improves yield.' },
-    { name: 'Carrots',            days: 3,  tip: 'Keep soil evenly moist for straight roots. Irregular watering causes forking.' },
-    { name: 'Radish',             days: 2,  tip: 'Fast-growing and thirsty. Keep soil consistently moist for tender roots.' },
-    { name: 'Peas',               days: 3,  tip: 'Water regularly especially when flowering and podding. Avoid wetting the foliage.' },
-    { name: 'Garlic',             days: 5,  tip: 'Water regularly in spring then reduce as leaves start to yellow in summer.' },
-    { name: 'Onion',              days: 5,  tip: 'Water consistently during bulb formation. Reduce watering as tops fall over.' },
-    { name: 'Broccoli',           days: 3,  tip: 'Keep soil consistently moist. Drought stress causes premature bolting.' },
+    { name: 'Croton',             days: 5,  tip: 'Likes consistently moist soil. Drops leaves if it dries out or gets cold drafts.' },
     { name: 'Sunflower',          days: 3,  tip: 'Water deeply at the base. Once established they\'re quite drought tolerant.' },
-    { name: 'Pansy',              days: 3,  tip: 'Keep soil moist but well-drained. They prefer cooler temperatures.' },
     { name: 'Dahlia',             days: 3,  tip: 'Water deeply 2–3 times a week. Mulch around the base to retain moisture.' },
   ];
 
-  // ─── Detect Android
-  function isAndroid() {
-    return /android/i.test(navigator.userAgent);
-  }
-
   // ─── URL params
-  function getPlanterId() {
-    return new URLSearchParams(window.location.search).get('id') || null;
-  }
-  function getMagicToken() {
-    return new URLSearchParams(window.location.search).get('token') || null;
-  }
-
-  const planterId  = getPlanterId();
-  const magicToken = getMagicToken();
+  const planterId = new URLSearchParams(window.location.search).get('id') || null;
 
   // ─── Storage helpers (scoped per planter)
-  function storageKey(field) {
-    return planterId ? `bg_${planterId}_${field}` : null;
-  }
-  function saveData(field, value) {
-    const key = storageKey(field);
-    if (key) localStorage.setItem(key, value);
-  }
-  function loadData(field) {
-    const key = storageKey(field);
-    return key ? localStorage.getItem(key) : null;
-  }
+  function storageKey(field) { return planterId ? `bg_${planterId}_${field}` : null; }
+  function saveData(field, value) { const k = storageKey(field); if (k) localStorage.setItem(k, value); }
+  function loadData(field) { const k = storageKey(field); return k ? localStorage.getItem(k) : null; }
   function clearData() {
-    ['name', 'days', 'tip'].forEach(f => {
-      const k = storageKey(f);
-      if (k) localStorage.removeItem(k);
-    });
-  }
-
-  // ─── Session token (global, not per-planter)
-  function getSessionToken() {
-    return localStorage.getItem('bg_session_token') || null;
-  }
-  function saveSessionToken(token) {
-    localStorage.setItem('bg_session_token', token);
-  }
-
-  // ─── Nudge dismissed flag (global)
-  function isNudgeDismissed() {
-    return localStorage.getItem('bg_nudge_dismissed') === '1';
-  }
-  function dismissNudge() {
-    localStorage.setItem('bg_nudge_dismissed', '1');
+    ['name', 'days', 'tip'].forEach(f => { const k = storageKey(f); if (k) localStorage.removeItem(k); });
   }
 
   // ─── State
@@ -612,37 +382,28 @@
   let selectedPlant = null;
 
   // ─── Elements
-  const setupScreen      = document.getElementById('setup-screen');
-  const confirmScreen    = document.getElementById('confirm-screen');
-  const doneScreen       = document.getElementById('done-screen');
-  const magicSentScreen  = document.getElementById('magic-sent-screen');
-  const noIdNotice       = document.getElementById('no-id-notice');
-  const plantNameInput   = document.getElementById('plant-name-input');
-  const setupSaveBtn     = document.getElementById('setup-save-btn');
-  const nameError        = document.getElementById('name-error');
-  const daysError        = document.getElementById('days-error');
-  const confirmName      = document.getElementById('confirm-name');
-  const confirmDays      = document.getElementById('confirm-days');
-  const confirmBtn       = document.getElementById('confirm-btn');
-  const changeBtn        = document.getElementById('change-btn');
-  const donePlantName    = document.getElementById('done-plant-name');
-  const doneDays         = document.getElementById('done-days');
-  const doneChangeBtn    = document.getElementById('done-change-btn');
-  const doneCareTip      = document.getElementById('done-care-tip');
-  const doneCareTipText  = document.getElementById('done-care-tip-text');
+  const setupScreen    = document.getElementById('setup-screen');
+  const confirmScreen  = document.getElementById('confirm-screen');
+  const doneScreen     = document.getElementById('done-screen');
+  const noIdNotice     = document.getElementById('no-id-notice');
+  const plantNameInput = document.getElementById('plant-name-input');
+  const setupSaveBtn   = document.getElementById('setup-save-btn');
+  const nameError      = document.getElementById('name-error');
+  const daysError      = document.getElementById('days-error');
+  const confirmName    = document.getElementById('confirm-name');
+  const confirmDays    = document.getElementById('confirm-days');
+  const confirmBtn     = document.getElementById('confirm-btn');
+  const changeBtn      = document.getElementById('change-btn');
+  const donePlantName  = document.getElementById('done-plant-name');
+  const doneDays       = document.getElementById('done-days');
+  const doneChangeBtn  = document.getElementById('done-change-btn');
+  const doneCareTip    = document.getElementById('done-care-tip');
+  const doneCareTipText = document.getElementById('done-care-tip-text');
   const autocompleteList = document.getElementById('autocomplete-list');
-  const historyNudge     = document.getElementById('history-nudge');
-  const nudgeFormState   = document.getElementById('nudge-form-state');
-  const nudgeSentState   = document.getElementById('nudge-sent-state');
-  const nudgeEmailInput  = document.getElementById('nudge-email');
-  const nudgeSubmitBtn   = document.getElementById('nudge-submit-btn');
-  const nudgeDismissBtn  = document.getElementById('nudge-dismiss-btn');
-  const nudgeError       = document.getElementById('nudge-error');
-  const signedInNote     = document.getElementById('signed-in-note');
 
   // ─── Screen switcher
   function showScreen(screen) {
-    [setupScreen, confirmScreen, doneScreen, magicSentScreen].forEach(s => s.classList.remove('active'));
+    [setupScreen, confirmScreen, doneScreen].forEach(s => s.classList.remove('active'));
     screen.classList.add('active');
   }
 
@@ -650,7 +411,7 @@
   let activeIndex = -1;
 
   function getMatches(query) {
-    if (!query || query.length < 1) return [];
+    if (!query) return [];
     const q = query.toLowerCase();
     return PLANTS.filter(p => p.name.toLowerCase().startsWith(q)).slice(0, 5);
   }
@@ -658,12 +419,12 @@
   function renderAutocomplete(matches) {
     autocompleteList.innerHTML = '';
     activeIndex = -1;
-    if (matches.length === 0) { autocompleteList.classList.remove('visible'); return; }
-    matches.forEach((plant) => {
+    if (!matches.length) { autocompleteList.classList.remove('visible'); return; }
+    matches.forEach(plant => {
       const item = document.createElement('div');
       item.className = 'autocomplete-item';
       item.innerHTML = `<span>${plant.name}</span><span class="autocomplete-item-days">every ${plant.days} day${plant.days === 1 ? '' : 's'}</span>`;
-      item.addEventListener('mousedown', (e) => { e.preventDefault(); selectPlant(plant); });
+      item.addEventListener('mousedown', e => { e.preventDefault(); selectPlant(plant); });
       autocompleteList.appendChild(item);
     });
     autocompleteList.classList.add('visible');
@@ -688,27 +449,16 @@
     nameError.classList.remove('visible');
   });
 
-  plantNameInput.addEventListener('keydown', (e) => {
+  plantNameInput.addEventListener('keydown', e => {
     const items = autocompleteList.querySelectorAll('.autocomplete-item');
     if (!items.length) return;
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      activeIndex = Math.min(activeIndex + 1, items.length - 1);
-      items.forEach((el, i) => el.classList.toggle('active', i === activeIndex));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      activeIndex = Math.max(activeIndex - 1, 0);
-      items.forEach((el, i) => el.classList.toggle('active', i === activeIndex));
-    } else if (e.key === 'Enter' && activeIndex >= 0) {
-      e.preventDefault();
-      const matches = getMatches(plantNameInput.value.trim());
-      if (matches[activeIndex]) selectPlant(matches[activeIndex]);
-    } else if (e.key === 'Escape') {
-      autocompleteList.classList.remove('visible');
-    }
+    if (e.key === 'ArrowDown') { e.preventDefault(); activeIndex = Math.min(activeIndex + 1, items.length - 1); items.forEach((el, i) => el.classList.toggle('active', i === activeIndex)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); activeIndex = Math.max(activeIndex - 1, 0); items.forEach((el, i) => el.classList.toggle('active', i === activeIndex)); }
+    else if (e.key === 'Enter' && activeIndex >= 0) { e.preventDefault(); const m = getMatches(plantNameInput.value.trim()); if (m[activeIndex]) selectPlant(m[activeIndex]); }
+    else if (e.key === 'Escape') { autocompleteList.classList.remove('visible'); }
   });
 
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', e => {
     if (!e.target.closest('.input-wrap')) autocompleteList.classList.remove('visible');
   });
 
@@ -722,192 +472,72 @@
     });
   });
 
-  // ─── Tap logging (silent, fires and forgets)
-  async function logTap(name, days) {
-    const token = getSessionToken();
-    if (!token || !planterId) return;
-    try {
-      await fetch('/api/log-tap.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Session-Token': token
-        },
-        body: JSON.stringify({
-          planter_id: planterId,
-          plant_name: name,
-          days_freq:  days
-        })
-      });
-    } catch (e) {
-      // Fail silently — never block the user experience
-    }
-  }
+  // ─── Detect iOS
+  function isIOS() { return /iphone|ipad|ipod/i.test(navigator.userAgent); }
 
-  // ─── Request magic link
-  async function requestMagicLink(email) {
-    if (!planterId) return false;
-    try {
-      const res = await fetch('/api/request-token.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, planter_id: planterId })
-      });
-      const data = await res.json();
-      return data.ok === true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  // ─── Verify magic token from URL (called on page load if ?token= present)
-  async function verifyMagicToken(token) {
-    try {
-      const res = await fetch('/api/verify-token.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token })
-      });
-      const data = await res.json();
-      if (data.ok && data.session_token) {
-        saveSessionToken(data.session_token);
-        return true;
-      }
-    } catch (e) {}
-    return false;
-  }
-
-  // ─── Done screen helper
-  function showDone(name, days, tip) {
-    donePlantName.textContent = name;
-    doneDays.textContent = days === 1 ? '1 day' : days + ' days';
-
-    if (tip) {
-      doneCareTipText.textContent = tip;
-      doneCareTip.classList.add('visible');
-    } else {
-      doneCareTip.classList.remove('visible');
-    }
-
-    // Show auth state UI
-    const hasSession = !!getSessionToken();
-    if (hasSession) {
-      signedInNote.classList.add('visible');
-      historyNudge.classList.remove('visible');
-    } else if (!isNudgeDismissed() && planterId) {
-      historyNudge.classList.add('visible');
-      signedInNote.classList.remove('visible');
-    } else {
-      historyNudge.classList.remove('visible');
-      signedInNote.classList.remove('visible');
-    }
-
-    showScreen(doneScreen);
-  }
-
-  // ─── Nudge submit
-  nudgeSubmitBtn.addEventListener('click', async () => {
-    const email = nudgeEmailInput.value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      nudgeError.classList.add('visible');
-      nudgeEmailInput.focus();
-      return;
-    }
-    nudgeError.classList.remove('visible');
-    nudgeSubmitBtn.disabled = true;
-    nudgeSubmitBtn.textContent = 'Sending…';
-
-    const ok = await requestMagicLink(email);
-
-    if (ok) {
-      nudgeFormState.style.display = 'none';
-      nudgeSentState.classList.add('visible');
-    } else {
-      nudgeSubmitBtn.disabled = false;
-      nudgeSubmitBtn.textContent = 'Send link';
-      nudgeError.textContent = 'Something went wrong. Please try again.';
-      nudgeError.classList.add('visible');
-    }
-  });
-
-  nudgeEmailInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') nudgeSubmitBtn.click();
-  });
-
-  nudgeEmailInput.addEventListener('input', () => nudgeError.classList.remove('visible'));
-
-  nudgeDismissBtn.addEventListener('click', () => {
-    dismissNudge();
-    historyNudge.classList.remove('visible');
-  });
-
-  // ─── Create calendar reminder
+  // ─── Create reminder
   function createReminder(plantName, daysFromNow) {
-    const now          = new Date();
+    const now = new Date();
     const reminderDate = new Date(now);
     reminderDate.setDate(reminderDate.getDate() + daysFromNow);
+    const start   = formatDate(reminderDate);
+    const title   = encodeURIComponent(`Water your ${plantName}`);
+    const details = encodeURIComponent(`Time to water your ${plantName}! Tap your Boreal Goods planter to set your next reminder.`);
 
-    if (isAndroid()) {
-      const startDate = formatGCalDate(reminderDate);
-      const title     = encodeURIComponent(`Water your ${plantName}`);
-      const details   = encodeURIComponent(`Time to water your ${plantName}! Scan your Boreal Goods planter to log today's watering.`);
-      window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${startDate}&details=${details}`, '_blank');
-    } else {
-      const dateStr     = formatICSDate(reminderDate);
-      const summary     = `Water your ${plantName}`;
-      const description = `Time to water your ${plantName}! Scan your Boreal Goods planter to log today's watering.`;
-      const icsContent  = [
+    if (isIOS()) {
+      const dateStr = formatDate(reminderDate);
+      const summary = `Water your ${plantName}`;
+      const desc    = `Time to water your ${plantName}! Tap your Boreal Goods planter to set your next reminder.`;
+      const ics = [
         'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Boreal Goods//Plant Reminder//EN',
         'BEGIN:VEVENT',
         `UID:${Date.now()}@borealgoods.ca`,
-        `DTSTAMP:${formatICSNow(now)}`,
+        `DTSTAMP:${now.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z'}`,
         `DTSTART;VALUE=DATE:${dateStr}`,
         `DTEND;VALUE=DATE:${dateStr}`,
         `SUMMARY:${summary}`,
-        `DESCRIPTION:${description}`,
+        `DESCRIPTION:${desc}`,
         'BEGIN:VALARM', 'TRIGGER:-PT0M', 'ACTION:DISPLAY', `DESCRIPTION:${summary}`, 'END:VALARM',
         'END:VEVENT', 'END:VCALENDAR'
       ].join('\r\n');
-      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-      const url  = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url; link.download = 'water-reminder.ics';
-      document.body.appendChild(link); link.click();
-      document.body.removeChild(link);
+      const url  = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+      const link = Object.assign(document.createElement('a'), { href: url, download: 'water-reminder.ics' });
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
       setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } else {
+      window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${start}&details=${details}`, '_blank');
     }
   }
 
-  function formatICSDate(d) {
+  function formatDate(d) {
     return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
   }
-  function formatICSNow(d) {
-    return d.toISOString().replace(/[-:]/g,'').split('.')[0] + 'Z';
-  }
-  function formatGCalDate(d) {
-    return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+
+  // ─── Done screen
+  function showDone(name, days, tip) {
+    donePlantName.textContent = name;
+    doneDays.textContent = days === 1 ? '1 day' : days + ' days';
+    if (tip) { doneCareTipText.textContent = tip; doneCareTip.classList.add('visible'); }
+    else { doneCareTip.classList.remove('visible'); }
+    const nudge = document.getElementById('calendar-nudge');
+    if (isIOS()) { nudge.classList.add('visible'); } else { nudge.classList.remove('visible'); }
+    showScreen(doneScreen);
   }
 
   // ─── Setup save
   setupSaveBtn.addEventListener('click', () => {
     const name = plantNameInput.value.trim();
     let valid  = true;
-    if (!name)         { nameError.classList.add('visible');  valid = false; }
-    else               { nameError.classList.remove('visible'); }
-    if (!selectedDays) { daysError.classList.add('visible');  valid = false; }
-    else               { daysError.classList.remove('visible'); }
+    if (!name)         { nameError.classList.add('visible'); valid = false; } else { nameError.classList.remove('visible'); }
+    if (!selectedDays) { daysError.classList.add('visible'); valid = false; } else { daysError.classList.remove('visible'); }
     if (!valid) return;
 
-    const tip = selectedPlant && selectedPlant.name.toLowerCase() === name.toLowerCase()
-      ? selectedPlant.tip : null;
-
+    const tip = selectedPlant && selectedPlant.name.toLowerCase() === name.toLowerCase() ? selectedPlant.tip : null;
     saveData('name', name);
     saveData('days', selectedDays);
     if (tip) saveData('tip', tip);
-
-    createReminder(name, selectedDays);
-    logTap(name, selectedDays); // silent, no session = no-op
     showDone(name, selectedDays, tip);
+    scheduleReminder(name, selectedDays);
   });
 
   // ─── Confirm (returning tap)
@@ -915,10 +545,18 @@
     const name = loadData('name');
     const days = parseInt(loadData('days'));
     const tip  = loadData('tip') || null;
-    createReminder(name, days);
-    logTap(name, days); // silent — logs if session token exists
     showDone(name, days, tip);
+    scheduleReminder(name, days);
   });
+
+  // ─── Schedule reminder — on iOS delay so nudge is read first
+  function scheduleReminder(name, days) {
+    if (isIOS()) {
+      setTimeout(() => createReminder(name, days), 2500);
+    } else {
+      createReminder(name, days);
+    }
+  }
 
   // ─── Reset
   changeBtn.addEventListener('click', resetToSetup);
@@ -934,26 +572,12 @@
   }
 
   // ─── Init
-  async function init() {
-    // If a magic token came in from the email link, verify it first
-    if (magicToken) {
-      const ok = await verifyMagicToken(magicToken);
-      if (ok) {
-        // Clean token from URL without a page reload
-        const cleanUrl = window.location.pathname + (planterId ? `?id=${planterId}` : '');
-        window.history.replaceState({}, '', cleanUrl);
-        showScreen(magicSentScreen);
-        return;
-      }
-      // If verification failed, fall through to normal flow
-    }
-
+  function init() {
     if (!planterId) {
       noIdNotice.style.display = 'block';
       showScreen(setupScreen);
       return;
     }
-
     const savedName = loadData('name');
     const savedDays = loadData('days');
     if (savedName && savedDays) {
@@ -963,6 +587,11 @@
     } else {
       showScreen(setupScreen);
     }
+  }
+
+  // ─── Service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
   }
 
   init();
