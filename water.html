@@ -172,7 +172,16 @@
     }
     .no-id-warning strong { color: var(--bark); display: block; margin-bottom: 0.2rem; font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase; }
 
-    /* ── Autocomplete ── */
+    .calendar-nudge {
+      display: none; background: #f0f5f1; border: 1px solid var(--mist);
+      border-left: 3px solid var(--forest-light); border-radius: 6px;
+      padding: 0.8rem 1rem; font-size: 0.8rem; color: var(--forest);
+      font-weight: 300; line-height: 1.6; margin-bottom: 1.2rem; text-align: left;
+    }
+    .calendar-nudge.visible { display: block; }
+    .calendar-nudge-label { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--forest-light); display: block; margin-bottom: 0.25rem; }
+    .calendar-nudge strong { font-weight: 500; color: var(--forest-deep); }
+
     .input-wrap { position: relative; }
 
     .autocomplete-list {
@@ -290,6 +299,10 @@
         <span class="care-tip-label">Care tip</span>
         <span id="done-care-tip-text"></span>
       </div>
+      <div class="calendar-nudge" id="calendar-nudge">
+        <span class="calendar-nudge-label">Adding to Calendar</span>
+        Tap <strong>Add to Calendar</strong> at the bottom of the screen — not the checkmark at the top.
+      </div>
       <button class="secondary-btn" id="done-change-btn">Change plant settings</button>
     </div>
   </div>
@@ -352,9 +365,6 @@
     { name: 'Sunflower',          days: 3,  tip: 'Water deeply at the base. Once established they\'re quite drought tolerant.' },
     { name: 'Dahlia',             days: 3,  tip: 'Water deeply 2–3 times a week. Mulch around the base to retain moisture.' },
   ];
-
-  // ─── Detect Android
-  function isAndroid() { return /android/i.test(navigator.userAgent); }
 
   // ─── URL params
   const planterId = new URLSearchParams(window.location.search).get('id') || null;
@@ -462,18 +472,19 @@
     });
   });
 
+  // ─── Detect iOS
+  function isIOS() { return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+
   // ─── Create reminder
   function createReminder(plantName, daysFromNow) {
     const now = new Date();
     const reminderDate = new Date(now);
     reminderDate.setDate(reminderDate.getDate() + daysFromNow);
+    const start   = formatDate(reminderDate);
+    const title   = encodeURIComponent(`Water your ${plantName}`);
+    const details = encodeURIComponent(`Time to water your ${plantName}! Tap your Boreal Goods planter to set your next reminder.`);
 
-    if (isAndroid()) {
-      const start   = formatDate(reminderDate);
-      const title   = encodeURIComponent(`Water your ${plantName}`);
-      const details = encodeURIComponent(`Time to water your ${plantName}! Tap your Boreal Goods planter to set your next reminder.`);
-      window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${start}&details=${details}`, '_blank');
-    } else {
+    if (isIOS()) {
       const dateStr = formatDate(reminderDate);
       const summary = `Water your ${plantName}`;
       const desc    = `Time to water your ${plantName}! Tap your Boreal Goods planter to set your next reminder.`;
@@ -493,6 +504,8 @@
       const link = Object.assign(document.createElement('a'), { href: url, download: 'water-reminder.ics' });
       document.body.appendChild(link); link.click(); document.body.removeChild(link);
       setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } else {
+      window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${start}&details=${details}`, '_blank');
     }
   }
 
@@ -506,6 +519,8 @@
     doneDays.textContent = days === 1 ? '1 day' : days + ' days';
     if (tip) { doneCareTipText.textContent = tip; doneCareTip.classList.add('visible'); }
     else { doneCareTip.classList.remove('visible'); }
+    const nudge = document.getElementById('calendar-nudge');
+    if (isIOS()) { nudge.classList.add('visible'); } else { nudge.classList.remove('visible'); }
     showScreen(doneScreen);
   }
 
