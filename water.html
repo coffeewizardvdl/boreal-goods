@@ -301,7 +301,7 @@
       </div>
       <div class="calendar-nudge" id="calendar-nudge">
         <span class="calendar-nudge-label">Adding to Calendar</span>
-        Tap <strong>Add to Calendar</strong> at the bottom of the screen — not the checkmark at the top.
+        A calendar prompt will appear in a moment. Tap <strong>Add to Calendar</strong> at the bottom — not the checkmark at the top.
       </div>
       <button class="secondary-btn" id="done-change-btn">Change plant settings</button>
     </div>
@@ -536,8 +536,8 @@
     saveData('name', name);
     saveData('days', selectedDays);
     if (tip) saveData('tip', tip);
-    createReminder(name, selectedDays);
     showDone(name, selectedDays, tip);
+    scheduleReminder(name, selectedDays);
   });
 
   // ─── Confirm (returning tap)
@@ -545,9 +545,18 @@
     const name = loadData('name');
     const days = parseInt(loadData('days'));
     const tip  = loadData('tip') || null;
-    createReminder(name, days);
     showDone(name, days, tip);
+    scheduleReminder(name, days);
   });
+
+  // ─── Schedule reminder — on iOS delay so nudge is read first
+  function scheduleReminder(name, days) {
+    if (isIOS()) {
+      setTimeout(() => createReminder(name, days), 2500);
+    } else {
+      createReminder(name, days);
+    }
+  }
 
   // ─── Reset
   changeBtn.addEventListener('click', resetToSetup);
