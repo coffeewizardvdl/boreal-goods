@@ -113,11 +113,12 @@
     .day-btn .day-label { display: block; font-size: 0.68rem; letter-spacing: 0.05em; opacity: 0.75; }
 
     .primary-btn {
-      display: block; width: 100%; padding: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; padding: 1rem;
       background: var(--forest); color: var(--cream); border: none; border-radius: 6px;
       font-family: 'Jost', sans-serif; font-size: 0.88rem; font-weight: 500;
       letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-top: 1.5rem;
-      text-decoration: none; display: flex; align-items: center; justify-content: center;
+      text-decoration: none;
     }
     .primary-btn:hover { background: var(--forest-deep); }
 
@@ -146,6 +147,18 @@
     .done-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--forest-deep); text-align: center; margin-bottom: 0.4rem; }
     .done-msg { font-size: 0.85rem; color: var(--bark-light); text-align: center; font-weight: 300; line-height: 1.6; margin-bottom: 1.5rem; }
     .done-msg strong { color: var(--forest); font-weight: 500; }
+
+    .care-tip {
+      background: #f0f5f1; border: 1px solid var(--mist);
+      border-left: 3px solid var(--forest-light); border-radius: 6px;
+      padding: 0.8rem 1rem; font-size: 0.8rem; color: var(--forest);
+      font-weight: 300; line-height: 1.55; margin-bottom: 1.2rem; display: none;
+    }
+    .care-tip.visible { display: block; }
+    .care-tip-label {
+      font-size: 0.68rem; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--forest-light); display: block; margin-bottom: 0.25rem;
+    }
 
     footer { padding: 1.5rem; text-align: center; font-size: 0.68rem; color: var(--mist); letter-spacing: 0.1em; text-transform: uppercase; position: relative; z-index: 1; }
     footer a { color: var(--bark-light); text-decoration: none; }
@@ -181,138 +194,6 @@
       font-size: 0.72rem; color: var(--forest-light); font-weight: 500;
       letter-spacing: 0.04em; white-space: nowrap; margin-left: 0.5rem;
     }
-
-    /* ── Care tip ── */
-    .care-tip {
-      background: #f0f5f1; border: 1px solid var(--mist);
-      border-left: 3px solid var(--forest-light); border-radius: 6px;
-      padding: 0.8rem 1rem; font-size: 0.8rem; color: var(--forest);
-      font-weight: 300; line-height: 1.55; margin-bottom: 1.2rem; display: none;
-    }
-    .care-tip.visible { display: block; }
-    .care-tip-label {
-      font-size: 0.68rem; font-weight: 500; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--forest-light); display: block; margin-bottom: 0.25rem;
-    }
-
-    /* ── History screen ── */
-    #history-screen { display: none; animation: fadeUp 0.4s ease forwards; }
-    #history-screen.active { display: block; }
-
-    .history-header { margin-bottom: 1.5rem; }
-    .history-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 600; color: var(--forest-deep); margin-bottom: 0.2rem; }
-    .history-plant { font-size: 0.8rem; color: var(--bark-light); font-weight: 300; letter-spacing: 0.04em; }
-
-    .history-list { margin-bottom: 1.2rem; }
-
-    .history-item {
-      display: flex; align-items: center; gap: 1rem;
-      padding: 0.9rem 1rem; background: white;
-      border: 1px solid var(--fog); border-radius: 8px; margin-bottom: 0.5rem;
-    }
-    .history-drop { font-size: 1.3rem; flex-shrink: 0; }
-    .history-date { font-size: 0.88rem; font-weight: 500; color: var(--charcoal); margin-bottom: 0.1rem; }
-    .history-sub  { font-size: 0.75rem; color: var(--bark-light); font-weight: 300; }
-
-    .history-empty {
-      text-align: center; padding: 2rem 1rem;
-      font-size: 0.85rem; color: var(--mist); font-weight: 300; letter-spacing: 0.04em;
-    }
-
-    /* ── Email gate screen ── */
-    #email-screen { display: none; animation: fadeUp 0.4s ease forwards; }
-    #email-screen.active { display: block; }
-
-    .email-gate-icon { font-size: 2.2rem; text-align: center; margin-bottom: 1rem; }
-
-    .email-field-wrap { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-
-    .email-field-wrap input {
-      flex: 1; min-width: 0; padding: 0.85rem 1rem;
-      background: white; border: 1.5px solid var(--fog); border-radius: 6px;
-      font-family: 'Jost', sans-serif; font-size: 0.95rem; color: var(--charcoal);
-      outline: none; transition: border-color 0.2s;
-    }
-    .email-field-wrap input::placeholder { color: var(--mist); }
-    .email-field-wrap input:focus { border-color: var(--forest-light); }
-
-    .email-send-btn {
-      padding: 0.85rem 1.1rem; background: var(--forest); color: var(--cream);
-      border: none; border-radius: 6px; font-family: 'Jost', sans-serif;
-      font-size: 0.82rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
-      cursor: pointer; transition: background 0.2s; white-space: nowrap; flex-shrink: 0;
-    }
-    .email-send-btn:hover { background: var(--forest-deep); }
-    .email-send-btn:disabled { opacity: 0.55; cursor: not-allowed; }
-
-    /* Sent state */
-    #email-sent-state { display: none; animation: fadeUp 0.4s ease forwards; }
-    #email-sent-state.active { display: block; }
-
-    .sent-card {
-      background: white; border: 1px solid var(--fog); border-radius: 10px;
-      padding: 1.8rem; text-align: center; margin-bottom: 1.5rem;
-    }
-    .sent-icon { font-size: 2.2rem; margin-bottom: 0.8rem; }
-    .sent-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--forest-deep); margin-bottom: 0.4rem; }
-    .sent-msg { font-size: 0.83rem; color: var(--bark-light); font-weight: 300; line-height: 1.65; }
-    .sent-msg strong { color: var(--charcoal); font-weight: 500; }
-
-    .resend-btn {
-      background: none; border: none; font-family: 'Jost', sans-serif;
-      font-size: 0.78rem; color: var(--bark-light); cursor: pointer;
-      text-decoration: underline; text-underline-offset: 3px; margin-top: 0.8rem;
-      letter-spacing: 0.04em;
-    }
-    .resend-btn:hover { color: var(--forest); }
-
-    /* Verifying spinner screen */
-    #verifying-screen { display: none; animation: fadeUp 0.4s ease forwards; }
-    #verifying-screen.active { display: block; }
-
-    .verifying-wrap { text-align: center; padding: 2rem 0; }
-    .spinner {
-      width: 40px; height: 40px; border: 3px solid var(--fog);
-      border-top-color: var(--forest); border-radius: 50%;
-      margin: 0 auto 1.2rem;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .verifying-text { font-size: 0.85rem; color: var(--bark-light); font-weight: 300; letter-spacing: 0.04em; }
-    /* ── Install nudge ── */
-    .install-nudge {
-      position: fixed; bottom: 1.5rem; left: 1rem; right: 1rem;
-      background: var(--forest-deep); color: var(--cream);
-      border-radius: 12px; padding: 1rem 1.2rem;
-      display: flex; align-items: center; gap: 1rem;
-      box-shadow: 0 8px 32px rgba(30,51,38,0.35);
-      z-index: 100; animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-      max-width: 460px; margin: 0 auto;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(120%); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
-    }
-    .install-nudge.hiding {
-      animation: slideDown 0.3s ease forwards;
-    }
-    @keyframes slideDown {
-      to { transform: translateY(120%); opacity: 0; }
-    }
-    .install-nudge-icon { font-size: 1.6rem; flex-shrink: 0; }
-    .install-nudge-body { flex: 1; }
-    .install-nudge-title {
-      font-family: 'Playfair Display', serif; font-size: 0.95rem;
-      font-weight: 600; color: var(--cream); margin-bottom: 0.2rem;
-    }
-    .install-nudge-text {
-      font-size: 0.75rem; font-weight: 300; color: var(--mist); line-height: 1.45;
-    }
-    .install-nudge-text strong { color: var(--cream); font-weight: 500; }
-    .install-nudge-close {
-      background: none; border: none; color: var(--mist); font-size: 1.2rem;
-      cursor: pointer; padding: 0.2rem; flex-shrink: 0; line-height: 1;
-    }
   </style>
 </head>
 <body>
@@ -344,44 +225,6 @@
 
 <main>
   <div class="section-divider"></div>
-
-  <!-- EMAIL GATE SCREEN -->
-  <div id="email-screen">
-    <div id="email-form-state">
-      <div class="email-gate-icon">🌿</div>
-      <h1 class="screen-title">Welcome to Boreal Goods</h1>
-      <p class="screen-subtitle">Enter your email to track your plant waterings.</p>
-      <div class="field-group">
-        <label for="email-input">Your email</label>
-        <div class="email-field-wrap">
-          <input type="text" id="email-input" placeholder="you@email.com" autocomplete="email">
-          <button class="email-send-btn" id="email-send-btn">Send link</button>
-        </div>
-        <div class="error-msg" id="email-error">Please enter a valid email address.</div>
-      </div>
-    </div>
-    <div id="email-sent-state">
-      <div class="sent-card">
-        <div class="sent-icon">✉️</div>
-        <div class="sent-title">Check your inbox</div>
-        <p class="sent-msg">We sent a sign-in link to <strong id="sent-email-display"></strong>.<br>Tap it to continue — it expires in 30 minutes.</p>
-      </div>
-      <p style="text-align:center;">
-        <button class="resend-btn" id="resend-btn">Didn't get it? Send again</button>
-      </p>
-      <p style="text-align:center;">
-        <button class="resend-btn" id="switch-email-btn">Not you? Use a different email</button>
-      </p>
-    </div>
-  </div>
-
-  <!-- VERIFYING SCREEN -->
-  <div id="verifying-screen">
-    <div class="verifying-wrap">
-      <div class="spinner"></div>
-      <p class="verifying-text">Signing you in…</p>
-    </div>
-  </div>
 
   <!-- SETUP SCREEN -->
   <div id="setup-screen">
@@ -429,8 +272,6 @@
       </p>
     </div>
     <button class="primary-btn" id="confirm-btn">Set Reminder</button>
-    <button class="secondary-btn" id="history-btn">View watering history</button>
-    <a class="secondary-btn" href="/dashboard.html" style="text-align:center; text-decoration:none; display:block;">My plants</a>
     <button class="secondary-btn" id="change-btn">Change plant settings</button>
   </div>
 
@@ -449,19 +290,8 @@
         <span class="care-tip-label">Care tip</span>
         <span id="done-care-tip-text"></span>
       </div>
-      <button class="secondary-btn" id="done-history-btn">View watering history</button>
       <button class="secondary-btn" id="done-change-btn">Change plant settings</button>
     </div>
-  </div>
-
-  <!-- HISTORY SCREEN -->
-  <div id="history-screen">
-    <div class="history-header">
-      <div class="history-title">Watering history</div>
-      <div class="history-plant" id="history-plant-label"></div>
-    </div>
-    <div class="history-list" id="history-list"></div>
-    <button class="secondary-btn" id="history-back-btn">← Back</button>
   </div>
 </main>
 
@@ -470,18 +300,7 @@
   &nbsp;·&nbsp; Edmonton, Alberta
 </footer>
 
-<!-- Install nudge (iOS only, shown when not in standalone mode) -->
-<div class="install-nudge" id="install-nudge" style="display:none;">
-  <div class="install-nudge-icon">🌿</div>
-  <div class="install-nudge-body">
-    <div class="install-nudge-title">Add to Home Screen</div>
-    <div class="install-nudge-text">Tap <strong>Share</strong> then <strong>Add to Home Screen</strong> — tap your planter without signing in every time.</div>
-  </div>
-  <button class="install-nudge-close" id="install-nudge-close">✕</button>
-</div>
-
 <script>
-  // ─── Plant database
   const PLANTS = [
     { name: 'Pothos',             days: 7,  tip: 'Let the soil dry out between waterings — it\'s more forgiving than you think.' },
     { name: 'Snake Plant',        days: 14, tip: 'One of the most drought-tolerant houseplants. Less water is almost always better.' },
@@ -518,69 +337,34 @@
     { name: 'Oregano',            days: 7,  tip: 'Like rosemary, prefers to dry out between waterings. Less is more.' },
     { name: 'Tomato',             days: 2,  tip: 'Consistent watering is key — irregular moisture causes blossom end rot.' },
     { name: 'Lettuce',            days: 2,  tip: 'Shallow roots mean frequent watering. Keep soil consistently moist.' },
+    { name: 'Pepper',             days: 3,  tip: 'Water deeply and allow top inch to dry slightly between waterings.' },
+    { name: 'Cucumber',           days: 2,  tip: 'Needs consistent moisture. Irregular watering leads to bitter fruit.' },
     { name: 'Lavender',           days: 10, tip: 'Drought-tolerant once established. Overwatering is the #1 killer.' },
     { name: 'Geranium',           days: 5,  tip: 'Allow soil to dry between waterings. Deadhead regularly for more blooms.' },
+    { name: 'Begonia',            days: 5,  tip: 'Keep soil lightly moist. Avoid wetting the leaves to prevent disease.' },
     { name: 'Umbrella Plant',     days: 7,  tip: 'Water when the top inch of soil is dry. Tolerates some neglect.' },
     { name: 'Prayer Plant',       days: 5,  tip: 'Keep soil consistently moist and provide high humidity for best results.' },
     { name: 'Money Tree',         days: 7,  tip: 'Water thoroughly then allow soil to dry out completely before watering again.' },
-    { name: 'Dieffenbachia',      days: 7,  tip: 'Water when the top inch of soil is dry. Avoid cold water — use room temperature.' },
-    { name: 'Air Plant',          days: 7,  tip: 'Mist 2–3 times a week or soak in water for 20 minutes weekly. Shake off excess.' },
+    { name: 'Air Plant',          days: 7,  tip: 'Mist 2–3 times a week or soak for 20 minutes weekly. Shake off excess.' },
     { name: 'Ponytail Palm',      days: 14, tip: 'Stores water in its trunk — one of the most drought-tolerant houseplants.' },
+    { name: 'Dieffenbachia',      days: 7,  tip: 'Water when the top inch of soil is dry. Avoid cold water — use room temperature.' },
+    { name: 'Croton',             days: 5,  tip: 'Likes consistently moist soil. Drops leaves if it dries out or gets cold drafts.' },
+    { name: 'Sunflower',          days: 3,  tip: 'Water deeply at the base. Once established they\'re quite drought tolerant.' },
+    { name: 'Dahlia',             days: 3,  tip: 'Water deeply 2–3 times a week. Mulch around the base to retain moisture.' },
   ];
 
-  // ─── API endpoints
-  const API = {
-    requestToken : '/api/request-token.php',
-    verifyToken  : '/api/verify-token.php',
-    logTap       : '/api/log-tap.php',
-  };
-
   // ─── Detect Android
-  function isAndroid() {
-    return /android/i.test(navigator.userAgent);
-  }
+  function isAndroid() { return /android/i.test(navigator.userAgent); }
 
   // ─── URL params
-  const urlParams  = new URLSearchParams(window.location.search);
-  const planterId  = urlParams.get('id')    || null;
-  const magicToken = urlParams.get('token') || null;
+  const planterId = new URLSearchParams(window.location.search).get('id') || null;
 
-  // ─── Cookie helpers
-  function setCookie(name, value, days) {
-    const expires = new Date();
-    expires.setDate(expires.getDate() + days);
-    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
-  }
-  function getCookie(name) {
-    const match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]+)'));
-    return match ? decodeURIComponent(match[1]) : null;
-  }
-
-  // ─── Session token (cookie, 365 days)
-  function getSessionToken()  { return getCookie('bg_session'); }
-  function setSessionToken(t) { setCookie('bg_session', t, 365); }
-
-  // ─── Saved email (cookie, 730 days — survives iOS NFC sandboxing)
-  function getSavedEmail()    { return getCookie('bg_email'); }
-  function setSavedEmail(e)   { setCookie('bg_email', e, 730); }
-
-  // ─── Planter-scoped data helpers
-  function storageKey(field) {
-    return planterId ? `bg_${planterId}_${field}` : null;
-  }
-  function saveData(field, value) {
-    const key = storageKey(field);
-    if (key) localStorage.setItem(key, value);
-  }
-  function loadData(field) {
-    const key = storageKey(field);
-    return key ? localStorage.getItem(key) : null;
-  }
+  // ─── Storage helpers (scoped per planter)
+  function storageKey(field) { return planterId ? `bg_${planterId}_${field}` : null; }
+  function saveData(field, value) { const k = storageKey(field); if (k) localStorage.setItem(k, value); }
+  function loadData(field) { const k = storageKey(field); return k ? localStorage.getItem(k) : null; }
   function clearData() {
-    ['name','days','tip'].forEach(f => {
-      const k = storageKey(f);
-      if (k) localStorage.removeItem(k);
-    });
+    ['name', 'days', 'tip'].forEach(f => { const k = storageKey(f); if (k) localStorage.removeItem(k); });
   }
 
   // ─── State
@@ -588,44 +372,28 @@
   let selectedPlant = null;
 
   // ─── Elements
-  const emailScreen      = document.getElementById('email-screen');
-  const emailFormState   = document.getElementById('email-form-state');
-  const emailSentState   = document.getElementById('email-sent-state');
-  const emailInput       = document.getElementById('email-input');
-  const emailSendBtn     = document.getElementById('email-send-btn');
-  const emailError       = document.getElementById('email-error');
-  const sentEmailDisplay = document.getElementById('sent-email-display');
-  const resendBtn        = document.getElementById('resend-btn');
-  const verifyingScreen  = document.getElementById('verifying-screen');
-  const setupScreen      = document.getElementById('setup-screen');
-  const confirmScreen    = document.getElementById('confirm-screen');
-  const doneScreen       = document.getElementById('done-screen');
-  const noIdNotice       = document.getElementById('no-id-notice');
-  const plantNameInput   = document.getElementById('plant-name-input');
-  const setupSaveBtn     = document.getElementById('setup-save-btn');
-  const nameError        = document.getElementById('name-error');
-  const daysError        = document.getElementById('days-error');
-  const confirmName      = document.getElementById('confirm-name');
-  const confirmDays      = document.getElementById('confirm-days');
-  const confirmBtn       = document.getElementById('confirm-btn');
-  const changeBtn        = document.getElementById('change-btn');
-  const donePlantName    = document.getElementById('done-plant-name');
-  const doneDays         = document.getElementById('done-days');
-  const doneChangeBtn    = document.getElementById('done-change-btn');
-  const doneCareTip      = document.getElementById('done-care-tip');
-  const doneCareTipText  = document.getElementById('done-care-tip-text');
+  const setupScreen    = document.getElementById('setup-screen');
+  const confirmScreen  = document.getElementById('confirm-screen');
+  const doneScreen     = document.getElementById('done-screen');
+  const noIdNotice     = document.getElementById('no-id-notice');
+  const plantNameInput = document.getElementById('plant-name-input');
+  const setupSaveBtn   = document.getElementById('setup-save-btn');
+  const nameError      = document.getElementById('name-error');
+  const daysError      = document.getElementById('days-error');
+  const confirmName    = document.getElementById('confirm-name');
+  const confirmDays    = document.getElementById('confirm-days');
+  const confirmBtn     = document.getElementById('confirm-btn');
+  const changeBtn      = document.getElementById('change-btn');
+  const donePlantName  = document.getElementById('done-plant-name');
+  const doneDays       = document.getElementById('done-days');
+  const doneChangeBtn  = document.getElementById('done-change-btn');
+  const doneCareTip    = document.getElementById('done-care-tip');
+  const doneCareTipText = document.getElementById('done-care-tip-text');
   const autocompleteList = document.getElementById('autocomplete-list');
-  const historyScreen    = document.getElementById('history-screen');
-  const historyList      = document.getElementById('history-list');
-  const historyPlantLabel = document.getElementById('history-plant-label');
-  const historyBtn       = document.getElementById('history-btn');
-  const doneHistoryBtn   = document.getElementById('done-history-btn');
-  const historyBackBtn   = document.getElementById('history-back-btn');
 
-  // ─── Screen switcher (handles all 6 screens)
-  const ALL_SCREENS = [emailScreen, verifyingScreen, setupScreen, confirmScreen, doneScreen, historyScreen];
+  // ─── Screen switcher
   function showScreen(screen) {
-    ALL_SCREENS.forEach(s => s.classList.remove('active'));
+    [setupScreen, confirmScreen, doneScreen].forEach(s => s.classList.remove('active'));
     screen.classList.add('active');
   }
 
@@ -633,7 +401,7 @@
   let activeIndex = -1;
 
   function getMatches(query) {
-    if (!query || query.length < 1) return [];
+    if (!query) return [];
     const q = query.toLowerCase();
     return PLANTS.filter(p => p.name.toLowerCase().startsWith(q)).slice(0, 5);
   }
@@ -641,8 +409,8 @@
   function renderAutocomplete(matches) {
     autocompleteList.innerHTML = '';
     activeIndex = -1;
-    if (matches.length === 0) { autocompleteList.classList.remove('visible'); return; }
-    matches.forEach((plant) => {
+    if (!matches.length) { autocompleteList.classList.remove('visible'); return; }
+    matches.forEach(plant => {
       const item = document.createElement('div');
       item.className = 'autocomplete-item';
       item.innerHTML = `<span>${plant.name}</span><span class="autocomplete-item-days">every ${plant.days} day${plant.days === 1 ? '' : 's'}</span>`;
@@ -674,21 +442,10 @@
   plantNameInput.addEventListener('keydown', e => {
     const items = autocompleteList.querySelectorAll('.autocomplete-item');
     if (!items.length) return;
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      activeIndex = Math.min(activeIndex + 1, items.length - 1);
-      items.forEach((el, i) => el.classList.toggle('active', i === activeIndex));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      activeIndex = Math.max(activeIndex - 1, 0);
-      items.forEach((el, i) => el.classList.toggle('active', i === activeIndex));
-    } else if (e.key === 'Enter' && activeIndex >= 0) {
-      e.preventDefault();
-      const matches = getMatches(plantNameInput.value.trim());
-      if (matches[activeIndex]) selectPlant(matches[activeIndex]);
-    } else if (e.key === 'Escape') {
-      autocompleteList.classList.remove('visible');
-    }
+    if (e.key === 'ArrowDown') { e.preventDefault(); activeIndex = Math.min(activeIndex + 1, items.length - 1); items.forEach((el, i) => el.classList.toggle('active', i === activeIndex)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); activeIndex = Math.max(activeIndex - 1, 0); items.forEach((el, i) => el.classList.toggle('active', i === activeIndex)); }
+    else if (e.key === 'Enter' && activeIndex >= 0) { e.preventDefault(); const m = getMatches(plantNameInput.value.trim()); if (m[activeIndex]) selectPlant(m[activeIndex]); }
+    else if (e.key === 'Escape') { autocompleteList.classList.remove('visible'); }
   });
 
   document.addEventListener('click', e => {
@@ -705,87 +462,93 @@
     });
   });
 
-  // ─────────────────────────────────────────
-  //  AUTH FLOW
-  // ─────────────────────────────────────────
+  // ─── Create reminder
+  function createReminder(plantName, daysFromNow) {
+    const now = new Date();
+    const reminderDate = new Date(now);
+    reminderDate.setDate(reminderDate.getDate() + daysFromNow);
 
-  // Step 1 — Send magic link (manual)
-  async function sendMagicLink(email) {
-    emailSendBtn.disabled = true;
-    emailSendBtn.textContent = 'Sending…';
-    emailError.classList.remove('visible');
-
-    try {
-      const res  = await fetch(API.requestToken, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ email, planter_id: planterId || 'unknown' }),
-      });
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error || 'Failed to send.');
-    } catch (err) {
-      emailError.textContent = err.message || 'Something went wrong. Please try again.';
-      emailError.classList.add('visible');
-      emailSendBtn.disabled    = false;
-      emailSendBtn.textContent = 'Send link';
-      return;
-    }
-
-    setSavedEmail(email); // remember for future iOS taps
-    sentEmailDisplay.textContent = email;
-    emailFormState.style.display = 'none';
-    emailSentState.classList.add('active');
-  }
-
-  // Step 1b — Auto-send magic link (returning iOS tap, no form)
-  async function autoSendMagicLink(email) {
-    showScreen(emailScreen);
-    emailFormState.style.display = 'none';
-    sentEmailDisplay.textContent = email;
-    emailSentState.classList.add('active');
-
-    try {
-      await fetch(API.requestToken, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ email, planter_id: planterId || 'unknown' }),
-      });
-    } catch (err) {
-      // If it fails, fall back to showing the form so they can retry
-      emailSentState.classList.remove('active');
-      emailFormState.style.display = '';
-      emailInput.value = email;
+    if (isAndroid()) {
+      const start   = formatDate(reminderDate);
+      const title   = encodeURIComponent(`Water your ${plantName}`);
+      const details = encodeURIComponent(`Time to water your ${plantName}! Tap your Boreal Goods planter to set your next reminder.`);
+      window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${start}&details=${details}`, '_blank');
+    } else {
+      const dateStr = formatDate(reminderDate);
+      const summary = `Water your ${plantName}`;
+      const desc    = `Time to water your ${plantName}! Tap your Boreal Goods planter to set your next reminder.`;
+      const ics = [
+        'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Boreal Goods//Plant Reminder//EN',
+        'BEGIN:VEVENT',
+        `UID:${Date.now()}@borealgoods.ca`,
+        `DTSTAMP:${now.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z'}`,
+        `DTSTART;VALUE=DATE:${dateStr}`,
+        `DTEND;VALUE=DATE:${dateStr}`,
+        `SUMMARY:${summary}`,
+        `DESCRIPTION:${desc}`,
+        'BEGIN:VALARM', 'TRIGGER:-PT0M', 'ACTION:DISPLAY', `DESCRIPTION:${summary}`, 'END:VALARM',
+        'END:VEVENT', 'END:VCALENDAR'
+      ].join('\r\n');
+      const url  = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+      const link = Object.assign(document.createElement('a'), { href: url, download: 'water-reminder.ics' });
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
   }
 
-  // Step 2 — Verify magic token (called on page load when ?token= present)
-  async function verifyMagicToken(token) {
-    showScreen(verifyingScreen);
-    try {
-      const res  = await fetch(API.verifyToken, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ token }),
-      });
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error || 'Invalid link.');
-      setSessionToken(data.session_token);
-      // Strip token from URL without triggering a page reload
-      const cleanUrl = window.location.pathname + (planterId ? `?id=${planterId}` : '');
-      window.history.replaceState({}, '', cleanUrl);
-      proceedAfterAuth();
-    } catch (err) {
-      // Show email screen with an inline error
-      showScreen(emailScreen);
-      emailError.textContent = err.message || 'This sign-in link is invalid or expired. Request a new one.';
-      emailError.classList.add('visible');
-    }
+  function formatDate(d) {
+    return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
   }
 
-  // ─────────────────────────────────────────
-  //  POST-AUTH: decide which screen to show
-  // ─────────────────────────────────────────
-  function proceedAfterAuth() {
+  // ─── Done screen
+  function showDone(name, days, tip) {
+    donePlantName.textContent = name;
+    doneDays.textContent = days === 1 ? '1 day' : days + ' days';
+    if (tip) { doneCareTipText.textContent = tip; doneCareTip.classList.add('visible'); }
+    else { doneCareTip.classList.remove('visible'); }
+    showScreen(doneScreen);
+  }
+
+  // ─── Setup save
+  setupSaveBtn.addEventListener('click', () => {
+    const name = plantNameInput.value.trim();
+    let valid  = true;
+    if (!name)         { nameError.classList.add('visible'); valid = false; } else { nameError.classList.remove('visible'); }
+    if (!selectedDays) { daysError.classList.add('visible'); valid = false; } else { daysError.classList.remove('visible'); }
+    if (!valid) return;
+
+    const tip = selectedPlant && selectedPlant.name.toLowerCase() === name.toLowerCase() ? selectedPlant.tip : null;
+    saveData('name', name);
+    saveData('days', selectedDays);
+    if (tip) saveData('tip', tip);
+    createReminder(name, selectedDays);
+    showDone(name, selectedDays, tip);
+  });
+
+  // ─── Confirm (returning tap)
+  confirmBtn.addEventListener('click', () => {
+    const name = loadData('name');
+    const days = parseInt(loadData('days'));
+    const tip  = loadData('tip') || null;
+    createReminder(name, days);
+    showDone(name, days, tip);
+  });
+
+  // ─── Reset
+  changeBtn.addEventListener('click', resetToSetup);
+  doneChangeBtn.addEventListener('click', resetToSetup);
+
+  function resetToSetup() {
+    clearData();
+    selectedDays = null; selectedPlant = null;
+    plantNameInput.value = '';
+    autocompleteList.classList.remove('visible');
+    document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+    showScreen(setupScreen);
+  }
+
+  // ─── Init
+  function init() {
     if (!planterId) {
       noIdNotice.style.display = 'block';
       showScreen(setupScreen);
@@ -802,274 +565,9 @@
     }
   }
 
-  // ─────────────────────────────────────────
-  //  INIT — entry point
-  // ─────────────────────────────────────────
-  async function init() {
-    // Case 1: magic link click — verify token first
-    if (magicToken) {
-      await verifyMagicToken(magicToken);
-      return;
-    }
-    // Case 2: already have a session — skip email gate
-    if (getSessionToken()) {
-      proceedAfterAuth();
-      return;
-    }
-    // Case 3: no session but saved email — auto-send magic link silently
-    const savedEmail = getSavedEmail();
-    if (savedEmail) {
-      autoSendMagicLink(savedEmail);
-      return;
-    }
-    // Case 4: completely new user — show email gate
-    showScreen(emailScreen);
-  }
-
-  // ─────────────────────────────────────────
-  //  EMAIL GATE EVENTS
-  // ─────────────────────────────────────────
-  emailSendBtn.addEventListener('click', () => {
-    const email = emailInput.value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      emailError.textContent = 'Please enter a valid email address.';
-      emailError.classList.add('visible');
-      return;
-    }
-    sendMagicLink(email);
-  });
-
-  emailInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') emailSendBtn.click();
-  });
-  emailInput.addEventListener('input', () => emailError.classList.remove('visible'));
-
-  resendBtn.addEventListener('click', () => {
-    const email = getSavedEmail() || emailInput.value.trim();
-    if (email) {
-      emailSentState.classList.remove('active');
-      emailFormState.style.display = '';
-      emailSendBtn.disabled    = false;
-      emailSendBtn.textContent = 'Send link';
-      autoSendMagicLink(email);
-    }
-  });
-
-  document.getElementById('switch-email-btn').addEventListener('click', () => {
-    setCookie('bg_email', '', -1); // clear saved email
-    emailSentState.classList.remove('active');
-    emailFormState.style.display = '';
-    emailInput.value = '';
-    emailSendBtn.disabled    = false;
-    emailSendBtn.textContent = 'Send link';
-  });
-
-  // ─────────────────────────────────────────
-  //  REMINDER CREATION
-  // ─────────────────────────────────────────
-  function createReminder(plantName, daysFromNow) {
-    const now = new Date();
-    const reminderDate = new Date(now);
-    reminderDate.setDate(reminderDate.getDate() + daysFromNow);
-
-    if (isAndroid()) {
-      const startDate = formatGCalDate(reminderDate);
-      const title     = encodeURIComponent(`Water your ${plantName}`);
-      const details   = encodeURIComponent(`Time to water your ${plantName}! Scan your Boreal Goods planter to log today's watering.`);
-      const gcalUrl   = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${startDate}&details=${details}`;
-      window.open(gcalUrl, '_blank');
-    } else {
-      const dateStr     = formatICSDate(reminderDate);
-      const summary     = `Water your ${plantName}`;
-      const description = `Time to water your ${plantName}! Scan your Boreal Goods planter to log today's watering.`;
-      const icsContent  = [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'PRODID:-//Boreal Goods//Plant Reminder//EN',
-        'BEGIN:VEVENT',
-        `UID:${Date.now()}@borealgoods.ca`,
-        `DTSTAMP:${formatICSNow(now)}`,
-        `DTSTART;VALUE=DATE:${dateStr}`,
-        `DTEND;VALUE=DATE:${dateStr}`,
-        `SUMMARY:${summary}`,
-        `DESCRIPTION:${description}`,
-        'BEGIN:VALARM',
-        'TRIGGER:-PT0M',
-        'ACTION:DISPLAY',
-        `DESCRIPTION:${summary}`,
-        'END:VALARM',
-        'END:VEVENT',
-        'END:VCALENDAR'
-      ].join('\r\n');
-      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-      const url  = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href     = url;
-      link.download = 'water-reminder.ics';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    }
-  }
-
-  // ─── Silent tap log (fire-and-forget)
-  function logTap(plantName, daysFreq) {
-    const sessionToken = getSessionToken();
-    if (!sessionToken || !planterId) return;
-    fetch(API.logTap, {
-      method:  'POST',
-      headers: {
-        'Content-Type':    'application/json',
-        'X-Session-Token': sessionToken,
-      },
-      body: JSON.stringify({ planter_id: planterId, plant_name: plantName, days_freq: daysFreq }),
-    }).catch(() => {}); // fail silently
-  }
-
-  // ─────────────────────────────────────────
-  //  DATE FORMATTERS
-  // ─────────────────────────────────────────
-  function formatICSDate(d) {
-    return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
-  }
-  function formatICSNow(d) {
-    return d.toISOString().replace(/[-:]/g,'').split('.')[0] + 'Z';
-  }
-  function formatGCalDate(d) {
-    return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
-  }
-
-  // ─────────────────────────────────────────
-  //  DONE SCREEN
-  // ─────────────────────────────────────────
-  function showDone(name, days, tip) {
-    donePlantName.textContent = name;
-    doneDays.textContent      = days === 1 ? '1 day' : days + ' days';
-    if (tip) {
-      doneCareTipText.textContent = tip;
-      doneCareTip.classList.add('visible');
-    } else {
-      doneCareTip.classList.remove('visible');
-    }
-    showScreen(doneScreen);
-  }
-
-  // ─────────────────────────────────────────
-  //  SETUP SAVE
-  // ─────────────────────────────────────────
-  setupSaveBtn.addEventListener('click', () => {
-    const name  = plantNameInput.value.trim();
-    let valid   = true;
-    if (!name)         { nameError.classList.add('visible'); valid = false; }
-    else               { nameError.classList.remove('visible'); }
-    if (!selectedDays) { daysError.classList.add('visible'); valid = false; }
-    else               { daysError.classList.remove('visible'); }
-    if (!valid) return;
-
-    const tip = selectedPlant && selectedPlant.name.toLowerCase() === name.toLowerCase()
-      ? selectedPlant.tip : null;
-
-    saveData('name', name);
-    saveData('days', selectedDays);
-    if (tip) saveData('tip', tip);
-    createReminder(name, selectedDays);
-    logTap(name, selectedDays);
-    showDone(name, selectedDays, tip);
-  });
-
-  // ─── Confirm (returning tap)
-  confirmBtn.addEventListener('click', () => {
-    const name = loadData('name');
-    const days = parseInt(loadData('days'));
-    const tip  = loadData('tip') || null;
-    createReminder(name, days);
-    logTap(name, days);
-    showDone(name, days, tip);
-  });
-
-  // ─── Reset
-  changeBtn.addEventListener('click', resetToSetup);
-  doneChangeBtn.addEventListener('click', resetToSetup);
-
-  function resetToSetup() {
-    clearData();
-    selectedDays  = null;
-    selectedPlant = null;
-    plantNameInput.value = '';
-    autocompleteList.classList.remove('visible');
-    document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
-    showScreen(setupScreen);
-  }
-
-  // ─────────────────────────────────────────
-  //  HISTORY
-  // ─────────────────────────────────────────
-  let historyBackTarget = confirmScreen; // which screen to go back to
-
-  async function showHistory(backTarget) {
-    historyBackTarget = backTarget || confirmScreen;
-    const name = loadData('name') || 'your plant';
-    historyPlantLabel.textContent = name;
-    historyList.innerHTML = '<div class="history-empty">Loading…</div>';
-    showScreen(historyScreen);
-
-    const sessionToken = getSessionToken();
-    if (!sessionToken || !planterId) {
-      historyList.innerHTML = '<div class="history-empty">Sign in to see your watering history.</div>';
-      return;
-    }
-    try {
-      const res  = await fetch(`/api/get-history.php?planter_id=${encodeURIComponent(planterId)}`, {
-        headers: { 'X-Session-Token': sessionToken },
-      });
-      const data = await res.json();
-      if (!data.ok || !data.history.length) {
-        historyList.innerHTML = '<div class="history-empty">No waterings logged yet.<br>Tap your planter after watering to start your history.</div>';
-        return;
-      }
-      historyList.innerHTML = data.history.map(h => {
-        const d    = new Date(h.tapped_at.replace(' ', 'T') + 'Z');
-        const date = d.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' });
-        const time = d.toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit' });
-        return `<div class="history-item">
-          <span class="history-drop">💧</span>
-          <div>
-            <div class="history-date">${date}</div>
-            <div class="history-sub">${time} · every ${h.days_freq} day${h.days_freq === 1 ? '' : 's'}</div>
-          </div>
-        </div>`;
-      }).join('');
-    } catch (e) {
-      historyList.innerHTML = '<div class="history-empty">Couldn\'t load history. Try again later.</div>';
-    }
-  }
-
-  historyBtn.addEventListener('click',     () => showHistory(confirmScreen));
-  doneHistoryBtn.addEventListener('click', () => showHistory(doneScreen));
-  historyBackBtn.addEventListener('click', () => showScreen(historyBackTarget));
-
-  // ─────────────────────────────────────────
-  //  PWA — Service worker + install nudge
-  // ─────────────────────────────────────────
-
+  // ─── Service worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
-  }
-
-  const isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isStandalone = window.navigator.standalone === true;
-  const nudgeDismissed = getCookie('bg_nudge_dismissed');
-
-  if (isIOS && !isStandalone && !nudgeDismissed) {
-    const nudge      = document.getElementById('install-nudge');
-    const nudgeClose = document.getElementById('install-nudge-close');
-    setTimeout(() => { nudge.style.display = 'flex'; }, 2000);
-    nudgeClose.addEventListener('click', () => {
-      nudge.classList.add('hiding');
-      setTimeout(() => { nudge.style.display = 'none'; }, 300);
-      setCookie('bg_nudge_dismissed', '1', 30);
-    });
   }
 
   init();
