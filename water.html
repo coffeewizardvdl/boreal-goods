@@ -491,9 +491,16 @@
   const planterId  = urlParams.get('id')    || null;
   const magicToken = urlParams.get('token') || null;
 
-  // ─── Global session token (stored in localStorage, device-scoped, NOT planter-scoped)
-  function getSessionToken()           { return localStorage.getItem('bg_session_token'); }
-  function setSessionToken(t)          { localStorage.setItem('bg_session_token', t); }
+  // ─── Global session token (cookie-based so iOS NFC taps persist across sessions)
+  function getSessionToken() {
+    const match = document.cookie.match(/(?:^|;\s*)bg_session=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+  function setSessionToken(t) {
+    const expires = new Date();
+    expires.setFullYear(expires.getFullYear() + 1);
+    document.cookie = `bg_session=${encodeURIComponent(t)}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+  }
 
   // ─── Planter-scoped data helpers
   function storageKey(field) {
