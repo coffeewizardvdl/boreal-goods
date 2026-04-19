@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boreal Goods — Plant Watering Reminder</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1e3326">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Boreal">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -273,6 +279,40 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .verifying-text { font-size: 0.85rem; color: var(--bark-light); font-weight: 300; letter-spacing: 0.04em; }
+    /* ── Install nudge ── */
+    .install-nudge {
+      position: fixed; bottom: 1.5rem; left: 1rem; right: 1rem;
+      background: var(--forest-deep); color: var(--cream);
+      border-radius: 12px; padding: 1rem 1.2rem;
+      display: flex; align-items: center; gap: 1rem;
+      box-shadow: 0 8px 32px rgba(30,51,38,0.35);
+      z-index: 100; animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      max-width: 460px; margin: 0 auto;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(120%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .install-nudge.hiding {
+      animation: slideDown 0.3s ease forwards;
+    }
+    @keyframes slideDown {
+      to { transform: translateY(120%); opacity: 0; }
+    }
+    .install-nudge-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .install-nudge-body { flex: 1; }
+    .install-nudge-title {
+      font-family: 'Playfair Display', serif; font-size: 0.95rem;
+      font-weight: 600; color: var(--cream); margin-bottom: 0.2rem;
+    }
+    .install-nudge-text {
+      font-size: 0.75rem; font-weight: 300; color: var(--mist); line-height: 1.45;
+    }
+    .install-nudge-text strong { color: var(--cream); font-weight: 500; }
+    .install-nudge-close {
+      background: none; border: none; color: var(--mist); font-size: 1.2rem;
+      cursor: pointer; padding: 0.2rem; flex-shrink: 0; line-height: 1;
+    }
   </style>
 </head>
 <body>
@@ -328,6 +368,9 @@
       </div>
       <p style="text-align:center;">
         <button class="resend-btn" id="resend-btn">Didn't get it? Send again</button>
+      </p>
+      <p style="text-align:center;">
+        <button class="resend-btn" id="switch-email-btn">Not you? Use a different email</button>
       </p>
     </div>
   </div>
@@ -491,16 +534,24 @@
   const planterId  = urlParams.get('id')    || null;
   const magicToken = urlParams.get('token') || null;
 
-  // ─── Global session token (cookie-based so iOS NFC taps persist across sessions)
-  function getSessionToken() {
-    const match = document.cookie.match(/(?:^|;\s*)bg_session=([^;]+)/);
+  // ─── Cookie helpers
+  function setCookie(name, value, days) {
+    const expires = new Date();
+    expires.setDate(expires.getDate() + days);
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+  }
+  function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]+)'));
     return match ? decodeURIComponent(match[1]) : null;
   }
-  function setSessionToken(t) {
-    const expires = new Date();
-    expires.setFullYear(expires.getFullYear() + 1);
-    document.cookie = `bg_session=${encodeURIComponent(t)}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
-  }
+
+  // ─── Session token (cookie, 365 days)
+  function getSessionToken()  { return getCookie('bg_session'); }
+  function setSessionToken(t) { setCookie('bg_session', t, 365); }
+
+  // ─── Saved email (cookie, 730 days — survives iOS NFC sandboxing)
+  function getSavedEmail()    { return getCookie('bg_email'); }
+  function setSavedEmail(e)   { setCookie('bg_email', e, 730); }
 
   // ─── Planter-scoped data helpers
   function storageKey(field) {
@@ -647,7 +698,7 @@
   //  AUTH FLOW
   // ─────────────────────────────────────────
 
-  // Step 1 — Send magic link
+  // Step 1 — Send magic link (manual)
   async function sendMagicLink(email) {
     emailSendBtn.disabled = true;
     emailSendBtn.textContent = 'Sending…';
@@ -669,10 +720,31 @@
       return;
     }
 
-    // Show sent state
+    setSavedEmail(email); // remember for future iOS taps
     sentEmailDisplay.textContent = email;
     emailFormState.style.display = 'none';
     emailSentState.classList.add('active');
+  }
+
+  // Step 1b — Auto-send magic link (returning iOS tap, no form)
+  async function autoSendMagicLink(email) {
+    showScreen(emailScreen);
+    emailFormState.style.display = 'none';
+    sentEmailDisplay.textContent = email;
+    emailSentState.classList.add('active');
+
+    try {
+      await fetch(API.requestToken, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email, planter_id: planterId || 'unknown' }),
+      });
+    } catch (err) {
+      // If it fails, fall back to showing the form so they can retry
+      emailSentState.classList.remove('active');
+      emailFormState.style.display = '';
+      emailInput.value = email;
+    }
   }
 
   // Step 2 — Verify magic token (called on page load when ?token= present)
@@ -728,12 +800,18 @@
       await verifyMagicToken(magicToken);
       return;
     }
-    // Case 2: already have a session on this device — skip email gate
+    // Case 2: already have a session — skip email gate
     if (getSessionToken()) {
       proceedAfterAuth();
       return;
     }
-    // Case 3: no session — show email gate
+    // Case 3: no session but saved email — auto-send magic link silently
+    const savedEmail = getSavedEmail();
+    if (savedEmail) {
+      autoSendMagicLink(savedEmail);
+      return;
+    }
+    // Case 4: completely new user — show email gate
     showScreen(emailScreen);
   }
 
@@ -756,8 +834,21 @@
   emailInput.addEventListener('input', () => emailError.classList.remove('visible'));
 
   resendBtn.addEventListener('click', () => {
+    const email = getSavedEmail() || emailInput.value.trim();
+    if (email) {
+      emailSentState.classList.remove('active');
+      emailFormState.style.display = '';
+      emailSendBtn.disabled    = false;
+      emailSendBtn.textContent = 'Send link';
+      autoSendMagicLink(email);
+    }
+  });
+
+  document.getElementById('switch-email-btn').addEventListener('click', () => {
+    setCookie('bg_email', '', -1); // clear saved email
     emailSentState.classList.remove('active');
     emailFormState.style.display = '';
+    emailInput.value = '';
     emailSendBtn.disabled    = false;
     emailSendBtn.textContent = 'Send link';
   });
@@ -947,7 +1038,40 @@
   doneHistoryBtn.addEventListener('click', () => showHistory(doneScreen));
   historyBackBtn.addEventListener('click', () => showScreen(historyBackTarget));
 
+  // ─────────────────────────────────────────
+  //  PWA — Service worker + install nudge
+  // ─────────────────────────────────────────
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
+
+  const isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  const nudgeDismissed = getCookie('bg_nudge_dismissed');
+
+  if (isIOS && !isStandalone && !nudgeDismissed) {
+    const nudge      = document.getElementById('install-nudge');
+    const nudgeClose = document.getElementById('install-nudge-close');
+    setTimeout(() => { nudge.style.display = 'flex'; }, 2000);
+    nudgeClose.addEventListener('click', () => {
+      nudge.classList.add('hiding');
+      setTimeout(() => { nudge.style.display = 'none'; }, 300);
+      setCookie('bg_nudge_dismissed', '1', 30);
+    });
+  }
+
   init();
 </script>
+<!-- Install nudge (iOS only, shown when not in standalone mode) -->
+<div class="install-nudge" id="install-nudge" style="display:none;">
+  <div class="install-nudge-icon">🌿</div>
+  <div class="install-nudge-body">
+    <div class="install-nudge-title">Add to Home Screen</div>
+    <div class="install-nudge-text">Tap <strong>Share</strong> then <strong>Add to Home Screen</strong> — tap your planter without signing in every time.</div>
+  </div>
+  <button class="install-nudge-close" id="install-nudge-close">✕</button>
+</div>
+
 </body>
 </html>
