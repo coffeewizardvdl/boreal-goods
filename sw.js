@@ -1,5 +1,5 @@
 // Boreal Goods Service Worker
-const CACHE = 'boreal-v1';
+const CACHE = 'boreal-v2';
 const PRECACHE = [
   '/water.html',
   '/manifest.json',
