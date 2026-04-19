@@ -161,14 +161,14 @@
 
     .email-field-wrap { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
 
-    .email-field-wrap input[type="email"] {
+    .email-field-wrap input {
       flex: 1; min-width: 0; padding: 0.85rem 1rem;
       background: white; border: 1.5px solid var(--fog); border-radius: 6px;
       font-family: 'Jost', sans-serif; font-size: 0.95rem; color: var(--charcoal);
       outline: none; transition: border-color 0.2s;
     }
-    .email-field-wrap input[type="email"]::placeholder { color: var(--mist); }
-    .email-field-wrap input[type="email"]:focus { border-color: var(--forest-light); }
+    .email-field-wrap input::placeholder { color: var(--mist); }
+    .email-field-wrap input:focus { border-color: var(--forest-light); }
 
     .email-send-btn {
       padding: 0.85rem 1.1rem; background: var(--forest); color: var(--cream);
@@ -254,7 +254,7 @@
       <div class="field-group">
         <label for="email-input">Your email</label>
         <div class="email-field-wrap">
-          <input type="email" id="email-input" placeholder="you@email.com" autocomplete="email" inputmode="email">
+          <input type="text" id="email-input" placeholder="you@email.com" autocomplete="email" inputmode="email">
           <button class="email-send-btn" id="email-send-btn">Send link</button>
         </div>
         <div class="error-msg" id="email-error">Please enter a valid email address.</div>
