@@ -153,6 +153,66 @@
     }
     .no-id-warning strong { color: var(--bark); display: block; margin-bottom: 0.2rem; font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase; }
 
+    /* ── Autocomplete ── */
+    .input-wrap { position: relative; }
+
+    .autocomplete-list {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: white; border: 1.5px solid var(--forest-light); border-radius: 6px;
+      box-shadow: 0 4px 16px rgba(30,51,38,0.10); z-index: 10; overflow: hidden; display: none;
+    }
+    .autocomplete-list.visible { display: block; }
+
+    .autocomplete-item {
+      padding: 0.75rem 1rem; font-family: 'Jost', sans-serif; font-size: 0.9rem;
+      font-weight: 400; color: var(--charcoal); cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--fog); transition: background 0.15s;
+    }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover, .autocomplete-item.active { background: #f0f5f1; }
+    .autocomplete-item-days {
+      font-size: 0.72rem; color: var(--forest-light); font-weight: 500;
+      letter-spacing: 0.04em; white-space: nowrap; margin-left: 0.5rem;
+    }
+
+    /* ── Care tip ── */
+    .care-tip {
+      background: #f0f5f1; border: 1px solid var(--mist);
+      border-left: 3px solid var(--forest-light); border-radius: 6px;
+      padding: 0.8rem 1rem; font-size: 0.8rem; color: var(--forest);
+      font-weight: 300; line-height: 1.55; margin-bottom: 1.2rem; display: none;
+    }
+    .care-tip.visible { display: block; }
+    .care-tip-label {
+      font-size: 0.68rem; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--forest-light); display: block; margin-bottom: 0.25rem;
+    }
+
+    /* ── History screen ── */
+    #history-screen { display: none; animation: fadeUp 0.4s ease forwards; }
+    #history-screen.active { display: block; }
+
+    .history-header { margin-bottom: 1.5rem; }
+    .history-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 600; color: var(--forest-deep); margin-bottom: 0.2rem; }
+    .history-plant { font-size: 0.8rem; color: var(--bark-light); font-weight: 300; letter-spacing: 0.04em; }
+
+    .history-list { margin-bottom: 1.2rem; }
+
+    .history-item {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 0.9rem 1rem; background: white;
+      border: 1px solid var(--fog); border-radius: 8px; margin-bottom: 0.5rem;
+    }
+    .history-drop { font-size: 1.3rem; flex-shrink: 0; }
+    .history-date { font-size: 0.88rem; font-weight: 500; color: var(--charcoal); margin-bottom: 0.1rem; }
+    .history-sub  { font-size: 0.75rem; color: var(--bark-light); font-weight: 300; }
+
+    .history-empty {
+      text-align: center; padding: 2rem 1rem;
+      font-size: 0.85rem; color: var(--mist); font-weight: 300; letter-spacing: 0.04em;
+    }
+
     /* ── Email gate screen ── */
     #email-screen { display: none; animation: fadeUp 0.4s ease forwards; }
     #email-screen.active { display: block; }
@@ -291,7 +351,10 @@
 
     <div class="field-group">
       <label>Plant name</label>
-      <input type="text" id="plant-name-input" placeholder="e.g. Pothos, Snake Plant…" maxlength="40">
+      <div class="input-wrap">
+        <input type="text" id="plant-name-input" placeholder="e.g. Pothos, Snake Plant…" maxlength="40" autocomplete="off">
+        <div class="autocomplete-list" id="autocomplete-list"></div>
+      </div>
       <div class="error-msg" id="name-error">Please enter your plant's name.</div>
     </div>
 
@@ -323,6 +386,7 @@
       </p>
     </div>
     <button class="primary-btn" id="confirm-btn">Set Reminder</button>
+    <button class="secondary-btn" id="history-btn">View watering history</button>
     <button class="secondary-btn" id="change-btn">Change plant settings</button>
   </div>
 
@@ -337,8 +401,23 @@
         You'll be reminded to water <strong id="done-plant-name">Pothos</strong><br>
         in <strong id="done-days">5 days</strong>.
       </p>
+      <div class="care-tip" id="done-care-tip">
+        <span class="care-tip-label">Care tip</span>
+        <span id="done-care-tip-text"></span>
+      </div>
+      <button class="secondary-btn" id="done-history-btn">View watering history</button>
       <button class="secondary-btn" id="done-change-btn">Change plant settings</button>
     </div>
+  </div>
+
+  <!-- HISTORY SCREEN -->
+  <div id="history-screen">
+    <div class="history-header">
+      <div class="history-title">Watering history</div>
+      <div class="history-plant" id="history-plant-label"></div>
+    </div>
+    <div class="history-list" id="history-list"></div>
+    <button class="secondary-btn" id="history-back-btn">← Back</button>
   </div>
 </main>
 
@@ -348,6 +427,53 @@
 </footer>
 
 <script>
+  // ─── Plant database
+  const PLANTS = [
+    { name: 'Pothos',             days: 7,  tip: 'Let the soil dry out between waterings — it\'s more forgiving than you think.' },
+    { name: 'Snake Plant',        days: 14, tip: 'One of the most drought-tolerant houseplants. Less water is almost always better.' },
+    { name: 'Peace Lily',         days: 7,  tip: 'Will droop slightly when thirsty — a helpful signal before you even check the soil.' },
+    { name: 'Spider Plant',       days: 7,  tip: 'Prefers to dry out a little between waterings. Thrives in indirect light.' },
+    { name: 'ZZ Plant',           days: 14, tip: 'Stores water in its roots — overwatering is the most common mistake.' },
+    { name: 'Monstera',           days: 7,  tip: 'Water when the top inch of soil is dry. Loves humidity.' },
+    { name: 'Fiddle Leaf Fig',    days: 7,  tip: 'Sensitive to inconsistent watering. Try to water on a regular schedule.' },
+    { name: 'Rubber Plant',       days: 7,  tip: 'Allow the top layer of soil to dry before watering again.' },
+    { name: 'Aloe Vera',          days: 14, tip: 'A true succulent — water deeply but infrequently and ensure good drainage.' },
+    { name: 'Boston Fern',        days: 3,  tip: 'Loves moisture. Check soil every couple of days and never let it fully dry out.' },
+    { name: 'Bird of Paradise',   days: 7,  tip: 'Water thoroughly, then allow the top 2 inches of soil to dry.' },
+    { name: 'Philodendron',       days: 7,  tip: 'Water when the top inch of soil feels dry. Yellowing leaves mean overwatering.' },
+    { name: 'Calathea',           days: 5,  tip: 'Prefers consistently moist soil and high humidity. Use filtered water if possible.' },
+    { name: 'Chinese Evergreen',  days: 7,  tip: 'Adaptable and forgiving. Water when the top inch of soil is dry.' },
+    { name: 'Dracaena',           days: 10, tip: 'Sensitive to fluoride in tap water. Let water sit overnight before using.' },
+    { name: 'Parlour Palm',       days: 7,  tip: 'Keep soil evenly moist but not soggy. Avoid direct sunlight.' },
+    { name: 'Cast Iron Plant',    days: 10, tip: 'Lives up to its name — extremely tough. Water sparingly.' },
+    { name: 'Jade Plant',         days: 14, tip: 'A succulent that prefers deep, infrequent watering. Allow soil to dry completely.' },
+    { name: 'String of Pearls',   days: 14, tip: 'Very susceptible to root rot. Water sparingly and ensure excellent drainage.' },
+    { name: 'Anthurium',          days: 5,  tip: 'Water when the top inch is dry. Likes bright indirect light and humidity.' },
+    { name: 'Cactus',             days: 14, tip: 'Water deeply but infrequently. In winter, once a month may be enough.' },
+    { name: 'Orchid',             days: 7,  tip: 'Water at the roots, not the leaves. Let dry slightly between waterings.' },
+    { name: 'African Violet',     days: 5,  tip: 'Water from the bottom to avoid spotting the leaves. Prefers room-temperature water.' },
+    { name: 'Hoya',               days: 10, tip: 'Tolerates drought well. Let soil dry between waterings for best results.' },
+    { name: 'Nerve Plant',        days: 3,  tip: 'Loves moisture and humidity. Don\'t let it dry out completely.' },
+    { name: 'Basil',              days: 2,  tip: 'Thirsty and fast-growing. Water when the top of the soil feels dry to the touch.' },
+    { name: 'Mint',               days: 2,  tip: 'Loves moisture. Keep soil consistently damp but not waterlogged.' },
+    { name: 'Rosemary',           days: 7,  tip: 'Drought-tolerant once established. Prefers to dry out between waterings.' },
+    { name: 'Thyme',              days: 7,  tip: 'Mediterranean herb that prefers dry conditions. Water sparingly.' },
+    { name: 'Cilantro',           days: 2,  tip: 'Bolts quickly in heat. Keep soil moist and place in a cool, bright spot.' },
+    { name: 'Parsley',            days: 3,  tip: 'Keep soil evenly moist. Avoid waterlogging as it can cause root rot.' },
+    { name: 'Chives',             days: 3,  tip: 'Prefers consistently moist soil. A reliable, easy herb to grow indoors.' },
+    { name: 'Oregano',            days: 7,  tip: 'Like rosemary, prefers to dry out between waterings. Less is more.' },
+    { name: 'Tomato',             days: 2,  tip: 'Consistent watering is key — irregular moisture causes blossom end rot.' },
+    { name: 'Lettuce',            days: 2,  tip: 'Shallow roots mean frequent watering. Keep soil consistently moist.' },
+    { name: 'Lavender',           days: 10, tip: 'Drought-tolerant once established. Overwatering is the #1 killer.' },
+    { name: 'Geranium',           days: 5,  tip: 'Allow soil to dry between waterings. Deadhead regularly for more blooms.' },
+    { name: 'Umbrella Plant',     days: 7,  tip: 'Water when the top inch of soil is dry. Tolerates some neglect.' },
+    { name: 'Prayer Plant',       days: 5,  tip: 'Keep soil consistently moist and provide high humidity for best results.' },
+    { name: 'Money Tree',         days: 7,  tip: 'Water thoroughly then allow soil to dry out completely before watering again.' },
+    { name: 'Dieffenbachia',      days: 7,  tip: 'Water when the top inch of soil is dry. Avoid cold water — use room temperature.' },
+    { name: 'Air Plant',          days: 7,  tip: 'Mist 2–3 times a week or soak in water for 20 minutes weekly. Shake off excess.' },
+    { name: 'Ponytail Palm',      days: 14, tip: 'Stores water in its trunk — one of the most drought-tolerant houseplants.' },
+  ];
+
   // ─── API endpoints
   const API = {
     requestToken : '/api/request-token.php',
@@ -382,14 +508,15 @@
     return key ? localStorage.getItem(key) : null;
   }
   function clearData() {
-    ['name','days'].forEach(f => {
+    ['name','days','tip'].forEach(f => {
       const k = storageKey(f);
       if (k) localStorage.removeItem(k);
     });
   }
 
   // ─── State
-  let selectedDays = null;
+  let selectedDays  = null;
+  let selectedPlant = null;
 
   // ─── Elements
   const emailScreen      = document.getElementById('email-screen');
@@ -416,13 +543,88 @@
   const donePlantName    = document.getElementById('done-plant-name');
   const doneDays         = document.getElementById('done-days');
   const doneChangeBtn    = document.getElementById('done-change-btn');
+  const doneCareTip      = document.getElementById('done-care-tip');
+  const doneCareTipText  = document.getElementById('done-care-tip-text');
+  const autocompleteList = document.getElementById('autocomplete-list');
+  const historyScreen    = document.getElementById('history-screen');
+  const historyList      = document.getElementById('history-list');
+  const historyPlantLabel = document.getElementById('history-plant-label');
+  const historyBtn       = document.getElementById('history-btn');
+  const doneHistoryBtn   = document.getElementById('done-history-btn');
+  const historyBackBtn   = document.getElementById('history-back-btn');
 
-  // ─── Screen switcher (handles all 5 screens)
-  const ALL_SCREENS = [emailScreen, verifyingScreen, setupScreen, confirmScreen, doneScreen];
+  // ─── Screen switcher (handles all 6 screens)
+  const ALL_SCREENS = [emailScreen, verifyingScreen, setupScreen, confirmScreen, doneScreen, historyScreen];
   function showScreen(screen) {
     ALL_SCREENS.forEach(s => s.classList.remove('active'));
     screen.classList.add('active');
   }
+
+  // ─── Autocomplete
+  let activeIndex = -1;
+
+  function getMatches(query) {
+    if (!query || query.length < 1) return [];
+    const q = query.toLowerCase();
+    return PLANTS.filter(p => p.name.toLowerCase().startsWith(q)).slice(0, 5);
+  }
+
+  function renderAutocomplete(matches) {
+    autocompleteList.innerHTML = '';
+    activeIndex = -1;
+    if (matches.length === 0) { autocompleteList.classList.remove('visible'); return; }
+    matches.forEach((plant) => {
+      const item = document.createElement('div');
+      item.className = 'autocomplete-item';
+      item.innerHTML = `<span>${plant.name}</span><span class="autocomplete-item-days">every ${plant.days} day${plant.days === 1 ? '' : 's'}</span>`;
+      item.addEventListener('mousedown', e => { e.preventDefault(); selectPlant(plant); });
+      autocompleteList.appendChild(item);
+    });
+    autocompleteList.classList.add('visible');
+  }
+
+  function selectPlant(plant) {
+    selectedPlant = plant;
+    plantNameInput.value = plant.name;
+    autocompleteList.classList.remove('visible');
+    document.querySelectorAll('.day-btn').forEach(b => {
+      b.classList.remove('selected');
+      if (parseInt(b.dataset.days) === plant.days) b.classList.add('selected');
+    });
+    selectedDays = plant.days;
+    daysError.classList.remove('visible');
+    nameError.classList.remove('visible');
+  }
+
+  plantNameInput.addEventListener('input', () => {
+    selectedPlant = null;
+    renderAutocomplete(getMatches(plantNameInput.value.trim()));
+    nameError.classList.remove('visible');
+  });
+
+  plantNameInput.addEventListener('keydown', e => {
+    const items = autocompleteList.querySelectorAll('.autocomplete-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIndex = Math.min(activeIndex + 1, items.length - 1);
+      items.forEach((el, i) => el.classList.toggle('active', i === activeIndex));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIndex = Math.max(activeIndex - 1, 0);
+      items.forEach((el, i) => el.classList.toggle('active', i === activeIndex));
+    } else if (e.key === 'Enter' && activeIndex >= 0) {
+      e.preventDefault();
+      const matches = getMatches(plantNameInput.value.trim());
+      if (matches[activeIndex]) selectPlant(matches[activeIndex]);
+    } else if (e.key === 'Escape') {
+      autocompleteList.classList.remove('visible');
+    }
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.input-wrap')) autocompleteList.classList.remove('visible');
+  });
 
   // ─── Day buttons
   document.querySelectorAll('.day-btn').forEach(btn => {
@@ -632,9 +834,15 @@
   // ─────────────────────────────────────────
   //  DONE SCREEN
   // ─────────────────────────────────────────
-  function showDone(name, days) {
+  function showDone(name, days, tip) {
     donePlantName.textContent = name;
     doneDays.textContent      = days === 1 ? '1 day' : days + ' days';
+    if (tip) {
+      doneCareTipText.textContent = tip;
+      doneCareTip.classList.add('visible');
+    } else {
+      doneCareTip.classList.remove('visible');
+    }
     showScreen(doneScreen);
   }
 
@@ -650,20 +858,25 @@
     else               { daysError.classList.remove('visible'); }
     if (!valid) return;
 
+    const tip = selectedPlant && selectedPlant.name.toLowerCase() === name.toLowerCase()
+      ? selectedPlant.tip : null;
+
     saveData('name', name);
     saveData('days', selectedDays);
+    if (tip) saveData('tip', tip);
     createReminder(name, selectedDays);
     logTap(name, selectedDays);
-    showDone(name, selectedDays);
+    showDone(name, selectedDays, tip);
   });
 
   // ─── Confirm (returning tap)
   confirmBtn.addEventListener('click', () => {
     const name = loadData('name');
     const days = parseInt(loadData('days'));
+    const tip  = loadData('tip') || null;
     createReminder(name, days);
     logTap(name, days);
-    showDone(name, days);
+    showDone(name, days, tip);
   });
 
   // ─── Reset
@@ -672,11 +885,60 @@
 
   function resetToSetup() {
     clearData();
-    selectedDays = null;
+    selectedDays  = null;
+    selectedPlant = null;
     plantNameInput.value = '';
+    autocompleteList.classList.remove('visible');
     document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
     showScreen(setupScreen);
   }
+
+  // ─────────────────────────────────────────
+  //  HISTORY
+  // ─────────────────────────────────────────
+  let historyBackTarget = confirmScreen; // which screen to go back to
+
+  async function showHistory(backTarget) {
+    historyBackTarget = backTarget || confirmScreen;
+    const name = loadData('name') || 'your plant';
+    historyPlantLabel.textContent = name;
+    historyList.innerHTML = '<div class="history-empty">Loading…</div>';
+    showScreen(historyScreen);
+
+    const sessionToken = getSessionToken();
+    if (!sessionToken || !planterId) {
+      historyList.innerHTML = '<div class="history-empty">Sign in to see your watering history.</div>';
+      return;
+    }
+    try {
+      const res  = await fetch(`/api/get-history.php?planter_id=${encodeURIComponent(planterId)}`, {
+        headers: { 'X-Session-Token': sessionToken },
+      });
+      const data = await res.json();
+      if (!data.ok || !data.history.length) {
+        historyList.innerHTML = '<div class="history-empty">No waterings logged yet.<br>Tap your planter after watering to start your history.</div>';
+        return;
+      }
+      historyList.innerHTML = data.history.map(h => {
+        const d    = new Date(h.tapped_at);
+        const date = d.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' });
+        const time = d.toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit' });
+        return `<div class="history-item">
+          <span class="history-drop">💧</span>
+          <div>
+            <div class="history-date">${date}</div>
+            <div class="history-sub">${time} · every ${h.days_freq} day${h.days_freq === 1 ? '' : 's'}</div>
+          </div>
+        </div>`;
+      }).join('');
+    } catch (e) {
+      historyList.innerHTML = '<div class="history-empty">Couldn\'t load history. Try again later.</div>';
+    }
+  }
+
+  historyBtn.addEventListener('click',     () => showHistory(confirmScreen));
+  doneHistoryBtn.addEventListener('click', () => showHistory(doneScreen));
+  historyBackBtn.addEventListener('click', () => showScreen(historyBackTarget));
 
   init();
 </script>
