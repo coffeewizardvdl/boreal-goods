@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plant Marker — Boreal Goods</title>
+  <meta name="description" content="A plant marker with quiet technology built in. Tap with your phone to track watering, set reminders, and care for your plants. No app. No account. Made in Edmonton.">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest: #2d4a35;
+      --forest-deep: #1e3326;
+      --forest-light: #4a7c59;
+      --bark: #6b4c2a;
+      --bark-light: #a07850;
+      --cream: #f7f2eb;
+      --fog: #e8e0d4;
+      --charcoal: #3f3c38;
+      --mist: #c8d4c0;
+      --gold: #c9a84c;
+      --gold-light: #e8c96a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    .forest-bar { background: var(--forest-deep); height: 5px; width: 100%; position: relative; z-index: 10; }
+
+    /* ── Nav ── */
+    nav {
+      padding: 1.2rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 10;
+      border-bottom: 1px solid var(--fog);
+      background: var(--cream);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      text-decoration: none;
+    }
+
+    .nav-logo svg { width: 36px; height: auto; }
+    .nav-logo-text { display: flex; flex-direction: column; line-height: 1; }
+    .nav-logo-boreal { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1rem; letter-spacing: 0.15em; color: var(--forest-deep); text-transform: uppercase; }
+    .nav-logo-goods { font-family: 'Jost', sans-serif; font-weight: 300; font-size: 0.6rem; letter-spacing: 0.3em; color: var(--bark); text-transform: uppercase; margin-top: 1px; }
+
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-links a { font-size: 0.75rem; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bark); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--forest); }
+    .nav-links a.active { color: var(--forest-deep); font-weight: 500; }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb {
+      padding: 1rem 2rem;
+      font-size: 0.7rem;
+      color: var(--mist);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+    .breadcrumb a { color: var(--bark-light); text-decoration: none; }
+    .breadcrumb span { margin: 0 0.4rem; }
+
+    /* ── Hero ── */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-right: 3rem;
+    }
+
+    .product-illustration {
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-left: 1rem;
+    }
+
+    .product-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--forest-light);
+      margin-bottom: 0.8rem;
+    }
+
+    .product-name {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 3rem;
+      line-height: 1.1;
+      color: var(--forest-deep);
+      margin-bottom: 0.5rem;
+    }
+
+    .product-tagline {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--bark-light);
+      margin-bottom: 1.8rem;
+      font-weight: 400;
+    }
+
+    .product-desc {
+      font-size: 0.92rem;
+      font-weight: 300;
+      color: var(--bark);
+      line-height: 1.8;
+      margin-bottom: 2rem;
+      max-width: 420px;
+    }
+
+    /* ── Pricing ── */
+    .pricing-block {
+      margin-bottom: 2rem;
+    }
+
+    .pricing-label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--forest);
+      margin-bottom: 0.8rem;
+    }
+
+    .pricing-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .pricing-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.1rem;
+      background: white;
+      border: 1.5px solid var(--fog);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pricing-option:hover { border-color: var(--forest-light); }
+    .pricing-option.selected { border-color: var(--forest); background: #f0f5f1; }
+
+    .pricing-option-left { display: flex; align-items: center; gap: 0.8rem; }
+
+    .pricing-radio {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--fog);
+      transition: all 0.2s;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .pricing-option.selected .pricing-radio {
+      border-color: var(--forest);
+      background: var(--forest);
+    }
+
+    .pricing-option.selected .pricing-radio::after {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: white;
+    }
+
+    .pricing-qty { font-size: 0.88rem; font-weight: 500; color: var(--charcoal); }
+    .pricing-includes { font-size: 0.75rem; font-weight: 300; color: var(--bark-light); }
+
+    .pricing-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--forest-deep);
+    }
+
+    .pricing-save {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: #fdf4e0;
+      border: 1px solid #f0d990;
+      border-radius: 3px;
+      padding: 0.1rem 0.35rem;
+      margin-left: 0.4rem;
+    }
+
+    /* ── CTA ── */
+    .cta-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      width: 100%;
+      padding: 1.1rem;
+      background: var(--forest);
+      color: var(--cream);
+      border: none;
+      border-radius: 8px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      margin-bottom: 0.8rem;
+    }
+    .cta-btn:hover { background: var(--forest-deep); transform: translateY(-1px); }
+
+    .etsy-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      font-weight: 300;
+      color: var(--mist);
+      letter-spacing: 0.05em;
+    }
+
+    .etsy-badge svg { width: 14px; height: 14px; fill: #F45800; opacity: 0.7; }
+
+    /* ── Trust pills ── */
+    .trust-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--fog);
+    }
+
+    .trust-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: var(--bark);
+      letter-spacing: 0.04em;
+    }
+
+    .trust-pill-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--forest-light);
+      flex-shrink: 0;
+    }
+
+    /* ── Divider ── */
+    .section-divider {
+      width: 60px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--forest-light), transparent);
+      margin: 0 auto;
+    }
+
+    /* ── How it works ── */
+    .how-section {
+      background: var(--forest-deep);
+      padding: 5rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .how-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .how-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .how-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--forest-light);
+      text-align: center;
+      margin-bottom: 0.8rem;
+    }
+
+    .how-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--cream);
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .how-title em { font-style: italic; color: var(--mist); }
+
+    .how-subtitle {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--mist);
+      text-align: center;
+      margin-bottom: 3.5rem;
+      letter-spacing: 0.03em;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      position: relative;
+    }
+
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 28px;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--forest-light), var(--forest-light), transparent);
+      opacity: 0.4;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0 1rem;
+    }
+
+    .step-num {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      border: 1.5px solid var(--forest-light);
+      background: var(--forest-deep);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 1.2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-title {
+      font-family: 'Jost', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cream);
+      margin-bottom: 0.4rem;
+    }
+
+    .step-desc {
+      font-size: 0.75rem;
+      font-weight: 300;
+      color: var(--mist);
+      line-height: 1.6;
+    }
+
+    /* ── Includes ── */
+    .includes-section {
+      padding: 5rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .includes-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--forest-light);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      font-weight: 600;
+      color: var(--forest-deep);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title em { font-style: italic; color: var(--forest-light); }
+
+    .includes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+    }
+
+    .include-card {
+      background: white;
+      border: 1px solid var(--fog);
+      border-radius: 10px;
+      padding: 1.8rem 1.5rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .include-card:hover { border-color: var(--forest-light); transform: translateY(-2px); }
+
+    .include-icon {
+      width: 44px; height: 44px;
+      border-radius: 8px;
+      background: #f0f5f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .include-icon svg { width: 22px; height: 22px; }
+
+    .include-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--forest-deep);
+      margin-bottom: 0.4rem;
+    }
+
+    .include-desc {
+      font-size: 0.8rem;
+      font-weight: 300;
+      color: var(--bark);
+      line-height: 1.65;
+    }
+
+    /* ── Label packs ── */
+    .labels-section {
+      background: #f0f5f1;
+      padding: 5rem 2rem;
+      border-top: 1px solid var(--mist);
+      border-bottom: 1px solid var(--mist);
+    }
+
+    .labels-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .labels-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .labels-header p {
+      font-size: 0.88rem;
+      font-weight: 300;
+      color: var(--bark);
+      max-width: 440px;
+      margin: 0.6rem auto 0;
+      line-height: 1.7;
+    }
+
+    .packs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .pack-card {
+      background: white;
+      border: 1px solid var(--fog);
+      border-radius: 10px;
+      padding: 1.4rem;
+      transition: border-color 0.2s;
+    }
+
+    .pack-card:hover { border-color: var(--forest-light); }
+
+    .pack-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+    }
+
+    .pack-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--forest-deep);
+      line-height: 1.3;
+    }
+
+    .pack-audience {
+      font-size: 0.68rem;
+      font-weight: 300;
+      color: var(--bark-light);
+      margin-top: 0.15rem;
+    }
+
+    .pack-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--forest);
+      white-space: nowrap;
+      margin-left: 0.5rem;
+    }
+
+    .pack-plants {
+      font-size: 0.72rem;
+      font-weight: 300;
+      color: var(--bark);
+      line-height: 1.7;
+    }
+
+    .labels-cta {
+      text-align: center;
+    }
+
+    .labels-cta a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 2rem;
+      background: var(--forest);
+      color: var(--cream);
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: background 0.2s;
+    }
+    .labels-cta a:hover { background: var(--forest-deep); }
+
+    /* ── Quiet tech ── */
+    .quiet-section {
+      padding: 5rem 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .quiet-inner {
+      max-width: 780px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .quiet-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: var(--forest-deep);
+      margin-bottom: 0.8rem;
+      line-height: 1.2;
+    }
+
+    .quiet-title em { font-style: italic; color: var(--forest-light); }
+
+    .quiet-body {
+      font-size: 0.92rem;
+      font-weight: 300;
+      color: var(--bark);
+      line-height: 1.9;
+      max-width: 560px;
+      margin: 0 auto 2rem;
+    }
+
+    .quiet-features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+      text-align: left;
+    }
+
+    .quiet-feature {
+      padding: 1.5rem;
+      border: 1px solid var(--fog);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .quiet-feature-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--forest-light);
+      margin-bottom: 0.4rem;
+    }
+
+    .quiet-feature-text {
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: var(--bark);
+      line-height: 1.6;
+    }
+
+    /* ── Bottom CTA ── */
+    .bottom-cta {
+      background: var(--forest-deep);
+      padding: 4rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bottom-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .bottom-cta-inner { position: relative; z-index: 1; max-width: 500px; margin: 0 auto; }
+
+    .bottom-cta-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 0.6rem;
+      line-height: 1.2;
+    }
+
+    .bottom-cta-title em { font-style: italic; color: var(--mist); }
+
+    .bottom-cta-sub {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--mist);
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .bottom-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 1.1rem 2.5rem;
+      background: var(--cream);
+      color: var(--forest-deep);
+      border-radius: 8px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .bottom-cta-btn:hover { background: var(--fog); transform: translateY(-1px); }
+
+    .bottom-cta-price {
+      margin-top: 1.2rem;
+      font-size: 0.75rem;
+      font-weight: 300;
+      color: var(--forest-light);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 2rem;
+      border-top: 1px solid var(--fog);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--forest-deep);
+    }
+
+    .footer-meta {
+      font-size: 0.68rem;
+      color: var(--mist);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .footer-meta a { color: var(--bark-light); text-decoration: none; }
+
+    /* ── Skeleton loader ── */
+    .pricing-skeleton {
+      height: 68px;
+      background: linear-gradient(90deg, #e8e0d4 25%, #f0ebe3 50%, #e8e0d4 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .api-error {
+      font-size: 0.78rem;
+      color: var(--bark-light);
+      font-weight: 300;
+      padding: 0.6rem 0;
+    }
+
+    /* ── Hero photo ── */
+    .hero-photo {
+      width: 100%;
+      max-width: 340px;
+      border-radius: 12px;
+      object-fit: cover;
+      display: none;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.2rem 3rem; }
+      .hero-visual { padding-right: 0; }
+      .product-name { font-size: 2.2rem; }
+      .steps-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .steps-grid::before { display: none; }
+      .includes-grid { grid-template-columns: 1fr; }
+      .packs-grid { grid-template-columns: 1fr 1fr; }
+      .quiet-features { grid-template-columns: 1fr; }
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { gap: 1.2rem; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .packs-grid { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="forest-bar"></div>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="20,65 35,30 50,65" fill="#2d4a35" opacity="0.7"/>
+      <rect x="32" y="65" width="6" height="10" fill="#6b4c2a" opacity="0.8"/>
+      <polygon points="45,65 60,10 75,65" fill="#1e3326"/>
+      <rect x="57" y="65" width="6" height="12" fill="#6b4c2a"/>
+      <polygon points="70,65 85,32 100,65" fill="#2d4a35" opacity="0.7"/>
+      <rect x="82" y="65" width="6" height="10" fill="#6b4c2a" opacity="0.8"/>
+    </svg>
+    <div class="nav-logo-text">
+      <span class="nav-logo-boreal">Boreal</span>
+      <span class="nav-logo-goods">Goods</span>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="/" >Home</a>
+    <a href="#" class="active">Shop</a>
+    <a href="#how-it-works">How it works</a>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <a href="/">Home</a>
+  <span>·</span>
+  <a href="#">Shop</a>
+  <span>·</span>
+  Plant Marker
+</div>
+
+<!-- ── Hero ── -->
+<section class="hero">
+
+  <!-- Illustration -->
+  <div class="hero-visual">
+    <svg class="product-illustration" viewBox="0 0 340 420" xmlns="http://www.w3.org/2000/svg">
+      <!-- Background glow -->
+      <defs>
+        <radialGradient id="glow" cx="50%" cy="60%" r="45%">
+          <stop offset="0%" stop-color="#4a7c59" stop-opacity="0.12"/>
+          <stop offset="100%" stop-color="#f7f2eb" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="soft-shadow">
+          <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#1e3326" flood-opacity="0.12"/>
+        </filter>
+      </defs>
+
+      <ellipse cx="170" cy="340" rx="110" ry="18" fill="#2d4a35" opacity="0.08"/>
+      <circle cx="170" cy="200" r="150" fill="url(#glow)"/>
+
+      <!-- Stake / spike -->
+      <rect x="155" y="270" width="30" height="130" rx="4" fill="#6b4c2a" filter="url(#soft-shadow)"/>
+      <polygon points="155,390 185,390 170,415" fill="#5a3e22"/>
+
+      <!-- Marker body -->
+      <rect x="80" y="90" width="180" height="195" rx="10" fill="#1e3326" filter="url(#soft-shadow)"/>
+      <rect x="85" y="95" width="170" height="185" rx="8" fill="#2d4a35"/>
+
+      <!-- Label area (cream insert) -->
+      <rect x="95" y="105" width="150" height="165" rx="6" fill="#f7f2eb"/>
+
+      <!-- Label content -->
+      <!-- Spruce icon small -->
+      <polygon points="140,130 155,108 170,130" fill="#2d4a35" opacity="0.6"/>
+      <rect x="152" y="130" width="4" height="6" fill="#6b4c2a" opacity="0.7"/>
+      <polygon points="148,130 163,112 178,130" fill="#1e3326" opacity="0.85"/>
+      <rect x="160" y="130" width="4" height="7" fill="#6b4c2a"/>
+      <polygon points="158,130 173,110 188,130" fill="#2d4a35" opacity="0.6"/>
+      <rect x="170" y="130" width="4" height="6" fill="#6b4c2a" opacity="0.7"/>
+
+      <!-- Divider line on label -->
+      <line x1="115" y1="148" x2="225" y2="148" stroke="#e8e0d4" stroke-width="1"/>
+
+      <!-- Plant name text representation -->
+      <rect x="118" y="158" width="104" height="8" rx="2" fill="#2d4a35" opacity="0.7"/>
+      <rect x="130" y="172" width="80" height="5" rx="2" fill="#a07850" opacity="0.5"/>
+
+      <!-- Divider -->
+      <line x1="115" y1="188" x2="225" y2="188" stroke="#e8e0d4" stroke-width="1"/>
+
+      <!-- Water drop icon area -->
+      <text x="170" y="218" text-anchor="middle" font-size="22" fill="#4a7c59" opacity="0.85">💧</text>
+      <rect x="130" y="228" width="80" height="4" rx="2" fill="#4a7c59" opacity="0.3"/>
+      <rect x="143" y="238" width="54" height="4" rx="2" fill="#4a7c59" opacity="0.2"/>
+
+      <!-- NFC tap indicator (subtle) -->
+      <circle cx="245" cy="105" r="12" fill="#c9a84c" opacity="0.15"/>
+      <circle cx="245" cy="105" r="7" fill="#c9a84c" opacity="0.25"/>
+      <circle cx="245" cy="105" r="3" fill="#c9a84c" opacity="0.7"/>
+
+      <!-- Boreal text at bottom of label -->
+      <rect x="130" y="255" width="80" height="4" rx="2" fill="#a07850" opacity="0.3"/>
+
+      <!-- Grip texture on stake -->
+      <line x1="158" y1="300" x2="182" y2="300" stroke="#5a3e22" stroke-width="1.5" opacity="0.5"/>
+      <line x1="158" y1="310" x2="182" y2="310" stroke="#5a3e22" stroke-width="1.5" opacity="0.5"/>
+      <line x1="158" y1="320" x2="182" y2="320" stroke="#5a3e22" stroke-width="1.5" opacity="0.5"/>
+    </svg>
+  </div>
+
+  <!-- Content -->
+  <div class="hero-content">
+    <p class="product-eyebrow">Boreal Goods · Plant Marker</p>
+    <h1 class="product-name">Plant<br>Marker</h1>
+    <p class="product-tagline">With quiet technology built in</p>
+    <p class="product-desc">No apps, no batteries, no setup. Just press it into soil and tap. Your phone remembers when to water — so you don't have to.</p>
+
+    <!-- Pricing options — populated by Etsy API -->
+    <div class="pricing-block" id="pricing-block">
+      <p class="pricing-label">Choose your size</p>
+      <div class="pricing-options" id="pricing-options">
+        <div class="pricing-skeleton"></div>
+        <div class="pricing-skeleton"></div>
+        <div class="pricing-skeleton"></div>
+      </div>
+    </div>
+
+    <a href="#" target="_blank" class="cta-btn" id="cta-btn" style="opacity:0.5;pointer-events:none;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Buy on Etsy
+    </a>
+    <div class="etsy-badge">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.7 0H4.3C1.9 0 0 1.9 0 4.3v15.4C0 22.1 1.9 24 4.3 24h15.4c2.4 0 4.3-1.9 4.3-4.3V4.3C24 1.9 22.1 0 19.7 0zm-3.1 7.3h-4.2v2.6h2.4l-.3 2.6h-2.1v7.8H9.8v-7.8H7.9V9.9h1.9V7c0-1.9 1.5-3.4 3.4-3.4h3.4v3.7z"/></svg>
+      Fulfilled through Etsy · Secure checkout
+    </div>
+
+    <div class="trust-row">
+      <div class="trust-pill"><div class="trust-pill-dot"></div>Made in Edmonton, AB</div>
+      <div class="trust-pill"><div class="trust-pill-dot"></div>Works on iPhone &amp; Android</div>
+      <div class="trust-pill"><div class="trust-pill-dot"></div>No app required</div>
+      <div class="trust-pill"><div class="trust-pill-dot"></div>Replaceable labels</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── How it works ── -->
+<section class="how-section" id="how-it-works">
+  <div class="how-inner">
+    <p class="how-eyebrow">Simple by design</p>
+    <h2 class="how-title">Five taps.<br><em>That's the whole thing.</em></h2>
+    <p class="how-subtitle">First setup takes 30 seconds. Every tap after that is one step.</p>
+
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Press in</div>
+        <p class="step-desc">Place the marker beside your plant, stake in soil</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Tap</div>
+        <p class="step-desc">Hold your phone near the marker — any iPhone or Android</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Name it</div>
+        <p class="step-desc">Choose from the built-in plant library or type your own</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-title">Set frequency</div>
+        <p class="step-desc">Pick how often you want to be reminded to water</p>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-title">Done</div>
+        <p class="step-desc">Every tap after this adds a calendar reminder automatically</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── What's included ── -->
+<section class="includes-section">
+  <div class="includes-header">
+    <p class="section-eyebrow">In the box</p>
+    <h2 class="section-title">Everything you need.<br><em>Nothing you don't.</em></h2>
+  </div>
+  <div class="includes-grid">
+    <div class="include-card">
+      <div class="include-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2d4a35" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <path d="M8 12h8M12 8v8"/>
+        </svg>
+      </div>
+      <div class="include-name">Plant Marker Base</div>
+      <p class="include-desc">Durable construction designed for both indoor and outdoor use. Built to last through seasons and soil.</p>
+    </div>
+    <div class="include-card">
+      <div class="include-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2d4a35" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="2" width="14" height="20" rx="2"/>
+          <path d="M9 7h6M9 11h6M9 15h4"/>
+        </svg>
+      </div>
+      <div class="include-name">Pre-Printed Label</div>
+      <p class="include-desc">A Boreal Goods designed insert, ready to slide in. Swap it anytime — no tools, no adhesive, no damage.</p>
+    </div>
+    <div class="include-card">
+      <div class="include-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2d4a35" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22C6.5 22 2 17.5 2 12S6.5 2 12 2s10 4.5 10 10-4.5 10-10 10z"/>
+          <path d="M12 8v4l3 3"/>
+        </svg>
+      </div>
+      <div class="include-name">NFC Chip</div>
+      <p class="include-desc">Built directly into the marker. Tap with any modern iPhone or Android — no app to download, no account to create.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Label Packs upsell ── -->
+<section class="labels-section">
+  <div class="labels-inner">
+    <div class="labels-header">
+      <p class="section-eyebrow">Also available</p>
+      <h2 class="section-title">Label Packs</h2>
+      <p>10 slide-in labels per pack, curated by plant type. Swap anytime — no tools, no adhesive.</p>
+    </div>
+
+    <div class="packs-grid">
+      <div class="pack-card">
+        <div class="pack-header">
+          <div>
+            <div class="pack-name">Indoor Blooming</div>
+            <div class="pack-audience">Houseplant lovers</div>
+          </div>
+          <div class="pack-price">$14</div>
+        </div>
+        <div class="pack-plants">African Violet, Orchid, Peace Lily, Anthurium, Kalanchoe, Begonia, Bromeliad, Jasmine, Crown of Thorns, Lipstick Plant</div>
+      </div>
+      <div class="pack-card">
+        <div class="pack-header">
+          <div>
+            <div class="pack-name">Herb Garden</div>
+            <div class="pack-audience">Cooks &amp; beginners</div>
+          </div>
+          <div class="pack-price">$14</div>
+        </div>
+        <div class="pack-plants">Basil, Mint, Parsley, Cilantro, Rosemary, Thyme, Chives, Dill, Oregano, Sage</div>
+      </div>
+      <div class="pack-card">
+        <div class="pack-header">
+          <div>
+            <div class="pack-name">Veggie Starter</div>
+            <div class="pack-audience">Edible gardeners</div>
+          </div>
+          <div class="pack-price">$14</div>
+        </div>
+        <div class="pack-plants">Tomato, Pepper, Cucumber, Zucchini, Lettuce, Beans, Carrot, Squash, Radish, Basil</div>
+      </div>
+      <div class="pack-card">
+        <div class="pack-header">
+          <div>
+            <div class="pack-name">Shade Garden</div>
+            <div class="pack-audience">Low-light yards</div>
+          </div>
+          <div class="pack-price">$14</div>
+        </div>
+        <div class="pack-plants">Hosta, Fern, Begonia, Impatiens, Caladium, Coleus, Astilbe, Heuchera, Japanese Forest Grass, Bleeding Heart</div>
+      </div>
+      <div class="pack-card">
+        <div class="pack-header">
+          <div>
+            <div class="pack-name">Pollinator</div>
+            <div class="pack-audience">Eco-friendly gardeners</div>
+          </div>
+          <div class="pack-price">$14</div>
+        </div>
+        <div class="pack-plants">Lavender, Bee Balm, Coneflower, Milkweed, Salvia, Sunflower, Zinnia, Marigold, Butterfly Bush, Coreopsis</div>
+      </div>
+      <div class="pack-card">
+        <div class="pack-header">
+          <div>
+            <div class="pack-name">Succulent</div>
+            <div class="pack-audience">Low-maintenance fans</div>
+          </div>
+          <div class="pack-price">$14</div>
+        </div>
+        <div class="pack-plants">Aloe Vera, Jade Plant, Echeveria, Haworthia, String of Pearls, Burro's Tail, Zebra Plant, Panda Plant, Kalanchoe, Sedum</div>
+      </div>
+    </div>
+
+    <div class="labels-cta">
+      <a href="https://borealgoodsyeg.etsy.com" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        Shop Label Packs on Etsy
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Quiet technology ── -->
+<section class="quiet-section">
+  <div class="quiet-inner">
+    <div class="section-divider" style="margin-bottom:2.5rem;"></div>
+    <h2 class="quiet-title"><em>Quiet technology.</em><br>There when you need it.</h2>
+    <p class="quiet-body">Technology that earns its place by disappearing. No notification overload, no app to maintain, no subscription. Just a small intelligence built into an object you already have in your home.</p>
+
+    <div class="quiet-features">
+      <div class="quiet-feature">
+        <div class="quiet-feature-label">No app</div>
+        <div class="quiet-feature-text">Works natively on iPhone and Android. Tap and go — your phone handles the rest.</div>
+      </div>
+      <div class="quiet-feature">
+        <div class="quiet-feature-label">No account</div>
+        <div class="quiet-feature-text">Nothing to sign up for. Your plant data lives on your phone, not a server.</div>
+      </div>
+      <div class="quiet-feature">
+        <div class="quiet-feature-label">No batteries</div>
+        <div class="quiet-feature-text">The NFC chip is passive — powered by your phone's tap, nothing else required.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Bottom CTA ── -->
+<section class="bottom-cta">
+  <div class="bottom-cta-inner">
+    <h2 class="bottom-cta-title">Ready to give your plants<br><em>a little quiet care?</em></h2>
+    <p class="bottom-cta-sub">Available now on Etsy. Ships from Edmonton, Alberta.</p>
+    <a href="https://borealgoodsyeg.etsy.com" target="_blank" class="bottom-cta-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Shop on Etsy
+    </a>
+    <p class="bottom-cta-price">Plant Marker from $12.50 · Label Packs $14.00</p>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Boreal Goods</div>
+  <div class="footer-meta">
+    <a href="https://borealgoods.ca">borealgoods.ca</a>
+    &nbsp;·&nbsp; Edmonton, Alberta
+  </div>
+</footer>
+
+<script>
+  // ── Pricing tier selector
+  function selectTier(el) {
+    document.querySelectorAll('.pricing-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    const url = el.dataset.url;
+    const btn = document.getElementById('cta-btn');
+    if (url) {
+      btn.href = url;
+      btn.style.opacity = '1';
+      btn.style.pointerEvents = 'auto';
+    }
+  }
+
+  // ── Fetch listings from our PHP proxy
+  async function loadListings() {
+    try {
+      const res  = await fetch('/etsy-proxy.php');
+      if (!res.ok) throw new Error('Proxy error ' + res.status);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      const listings = data.results || [];
+      if (!listings.length) throw new Error('No listings found');
+
+      renderPricing(listings);
+      renderHeroImage(listings);
+
+    } catch (err) {
+      console.warn('Etsy API:', err.message);
+      renderFallback();
+    }
+  }
+
+  // ── Render pricing options from live listings
+  function renderPricing(listings) {
+    const container = document.getElementById('pricing-options');
+    container.innerHTML = '';
+
+    // Sort by price ascending
+    listings.sort((a, b) => a.price.amount - b.price.amount);
+
+    const badges = ['', 'Save 50%', 'Best value'];
+
+    listings.forEach((listing, i) => {
+      const price   = (listing.price.amount / listing.price.divisor).toFixed(2);
+      const url     = listing.url;
+      const title   = listing.title;
+      const badge   = badges[i] || '';
+
+      const opt = document.createElement('div');
+      opt.className = 'pricing-option' + (i === 0 ? ' selected' : '');
+      opt.dataset.url = url;
+      opt.onclick = function() { selectTier(this); };
+      opt.innerHTML = `
+        <div class="pricing-option-left">
+          <div class="pricing-radio"></div>
+          <div>
+            <div class="pricing-qty">${title}${badge ? ` <span class="pricing-save">${badge}</span>` : ''}</div>
+          </div>
+        </div>
+        <div class="pricing-price">$${price}</div>
+      `;
+      container.appendChild(opt);
+    });
+
+    // Activate CTA with first listing URL
+    const btn = document.getElementById('cta-btn');
+    btn.href = listings[0].url;
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+  }
+
+  // ── Use first listing's main image as hero if available
+  function renderHeroImage(listings) {
+    const first = listings[0];
+    const img   = first?.main_image?.url_fullxfull || first?.images?.[0]?.url_fullxfull;
+    if (!img) return;
+
+    const heroVisual = document.querySelector('.hero-visual');
+    const existing   = heroVisual.querySelector('.product-illustration');
+
+    const photo = document.createElement('img');
+    photo.src   = img;
+    photo.alt   = first.title;
+    photo.className = 'hero-photo';
+    photo.style.display = 'block';
+    heroVisual.appendChild(photo);
+
+    // Fade out SVG illustration once photo loads
+    photo.onload = () => {
+      if (existing) existing.style.display = 'none';
+    };
+  }
+
+  // ── Fallback: static pricing if API fails
+  function renderFallback() {
+    const container = document.getElementById('pricing-options');
+    const shopUrl   = 'https://borealgoodsyeg.etsy.com';
+    container.innerHTML = `
+      <div class="pricing-option selected" onclick="selectTier(this)" data-url="${shopUrl}">
+        <div class="pricing-option-left">
+          <div class="pricing-radio"></div>
+          <div><div class="pricing-qty">Single Marker</div><div class="pricing-includes">1 base + 1 pre-printed label</div></div>
+        </div>
+        <div class="pricing-price">$12.50</div>
+      </div>
+      <div class="pricing-option" onclick="selectTier(this)" data-url="${shopUrl}">
+        <div class="pricing-option-left">
+          <div class="pricing-radio"></div>
+          <div><div class="pricing-qty">5-Pack <span class="pricing-save">Save 50%</span></div><div class="pricing-includes">5 bases + 10 labels</div></div>
+        </div>
+        <div class="pricing-price">$31.00</div>
+      </div>
+      <div class="pricing-option" onclick="selectTier(this)" data-url="${shopUrl}">
+        <div class="pricing-option-left">
+          <div class="pricing-radio"></div>
+          <div><div class="pricing-qty">10-Pack <span class="pricing-save">Best value</span></div><div class="pricing-includes">10 bases + 20 labels</div></div>
+        </div>
+        <div class="pricing-price">$52.00</div>
+      </div>
+    `;
+    const btn = document.getElementById('cta-btn');
+    btn.href = shopUrl;
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+  }
+
+  loadListings();
+</script>
+
+</body>
+</html>
