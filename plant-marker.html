@@ -1156,11 +1156,12 @@
       const data = await res.json();
       if (data.error) throw new Error(data.error);
 
-      const listings = data.results || [];
-      if (!listings.length) throw new Error('No listings found');
+      // Single listing endpoint returns the object directly
+      const listing = data.listing || data;
+      if (!listing || !listing.listing_id) throw new Error('No listing found');
 
-      renderPricing(listings);
-      renderHeroImage(listings);
+      renderPricing([listing]);
+      renderHeroImage([listing]);
 
     } catch (err) {
       console.warn('Etsy API:', err.message);
@@ -1231,33 +1232,35 @@
 
   // ── Fallback: static pricing if API fails
   function renderFallback() {
-    const container = document.getElementById('pricing-options');
-    const shopUrl   = 'https://borealgoodsyeg.etsy.com';
+    const container  = document.getElementById('pricing-options');
+    const urlSingle = 'https://www.etsy.com/ca/listing/4495031178/water-reminder-plant-marker-waterproof?variation0=6577752651';
+    const url5pack  = 'https://www.etsy.com/ca/listing/4495031178/water-reminder-plant-marker-waterproof?variation0=6549236464';
+    const url10pack = 'https://www.etsy.com/ca/listing/4495031178/water-reminder-plant-marker-waterproof?variation0=6549236462';
     container.innerHTML = `
-      <div class="pricing-option selected" onclick="selectTier(this)" data-url="${shopUrl}">
+      <div class="pricing-option selected" onclick="selectTier(this)" data-url="${urlSingle}">
         <div class="pricing-option-left">
           <div class="pricing-radio"></div>
-          <div><div class="pricing-qty">Single Marker</div><div class="pricing-includes">1 base + 1 pre-printed label</div></div>
+          <div><div class="pricing-qty">Single</div><div class="pricing-includes">1 marker + 1 label</div></div>
         </div>
-        <div class="pricing-price">$12.50</div>
+        <div class="pricing-price">CA$12.50</div>
       </div>
-      <div class="pricing-option" onclick="selectTier(this)" data-url="${shopUrl}">
+      <div class="pricing-option" onclick="selectTier(this)" data-url="${url5pack}">
         <div class="pricing-option-left">
           <div class="pricing-radio"></div>
-          <div><div class="pricing-qty">5-Pack <span class="pricing-save">Save 50%</span></div><div class="pricing-includes">5 bases + 10 labels</div></div>
+          <div><div class="pricing-qty">5-Pack <span class="pricing-save">Save 50%</span></div><div class="pricing-includes">5 markers + 5 labels</div></div>
         </div>
-        <div class="pricing-price">$31.00</div>
+        <div class="pricing-price">CA$31.00</div>
       </div>
-      <div class="pricing-option" onclick="selectTier(this)" data-url="${shopUrl}">
+      <div class="pricing-option" onclick="selectTier(this)" data-url="${url10pack}">
         <div class="pricing-option-left">
           <div class="pricing-radio"></div>
-          <div><div class="pricing-qty">10-Pack <span class="pricing-save">Best value</span></div><div class="pricing-includes">10 bases + 20 labels</div></div>
+          <div><div class="pricing-qty">10-Pack <span class="pricing-save">Best value</span></div><div class="pricing-includes">10 markers + 10 labels</div></div>
         </div>
-        <div class="pricing-price">$52.00</div>
+        <div class="pricing-price">CA$52.00</div>
       </div>
     `;
     const btn = document.getElementById('cta-btn');
-    btn.href = shopUrl;
+    btn.href = urlSingle;
     btn.style.opacity = '1';
     btn.style.pointerEvents = 'auto';
   }

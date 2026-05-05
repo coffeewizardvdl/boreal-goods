@@ -3,10 +3,10 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: https://borealgoods.ca');
 header('Cache-Control: public, max-age=300'); // Cache for 5 minutes
 
-$api_key   = 'p1bpg9ii2d72ozzca1otww8m';
-$shop_id   = 'borealgoodsyeg';
+$api_key    = 'p1bpg9ii2d72ozzca1otww8m';
+$listing_id = '4495031178';
 
-$endpoint  = "https://api.etsy.com/v3/application/shops/{$shop_id}/listings/active?limit=25&includes=Images,MainImage";
+$endpoint = "https://api.etsy.com/v3/application/listings/{$listing_id}?includes[]=Images&includes[]=MainImage";
 
 $ch = curl_init();
 curl_setopt_array($ch, [
