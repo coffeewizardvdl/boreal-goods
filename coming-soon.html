@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boreal Goods — Made in the North</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest: #2d4a35;
+      --forest-deep: #1e3326;
+      --forest-light: #4a7c59;
+      --bark: #6b4c2a;
+      --bark-light: #a07850;
+      --cream: #f7f2eb;
+      --fog: #e8e0d4;
+      --charcoal: #3f3c38;
+      --mist: #c8d4c0;
+      --gold: #c9a84c;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background-color: var(--cream);
+      color: var(--charcoal);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Noise texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    .forest-bar { background: var(--forest-deep); height: 5px; width: 100%; }
+
+    /* ── Header ── */
+    header {
+      padding: 2.5rem 1.5rem 1.5rem;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-wordmark { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
+    .logo-trees { width: 88px; height: auto; margin-bottom: 0.5rem; opacity: 0.9; }
+    .logo-boreal { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.7rem; letter-spacing: 0.18em; color: var(--forest-deep); text-transform: uppercase; }
+    .logo-goods { font-family: 'Jost', sans-serif; font-weight: 300; font-size: 0.85rem; letter-spacing: 0.35em; color: var(--bark); text-transform: uppercase; }
+    .logo-divider { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.3rem; }
+    .logo-divider-line { width: 30px; height: 1px; background: var(--bark-light); }
+    .logo-diamond { width: 5px; height: 5px; background: var(--bark-light); transform: rotate(45deg); }
+    .logo-tagline { font-family: 'Jost', sans-serif; font-weight: 300; font-size: 0.62rem; letter-spacing: 0.3em; color: var(--bark-light); text-transform: uppercase; }
+
+    /* ── Main ── */
+    main {
+      flex: 1;
+      padding: 2rem 1.5rem 3rem;
+      position: relative;
+      z-index: 1;
+      max-width: 520px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .section-divider {
+      width: 60px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--forest-light), transparent);
+      margin: 0 auto 2.5rem;
+    }
+
+    /* ── Hero text ── */
+    .hero {
+      text-align: center;
+      margin-bottom: 2.8rem;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.7rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--bark-light);
+      margin-bottom: 1rem;
+    }
+
+    .hero-headline {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--forest-deep);
+      margin-bottom: 1.1rem;
+    }
+
+    .hero-headline em {
+      font-style: italic;
+      color: var(--forest-light);
+    }
+
+    .hero-body {
+      font-size: 0.92rem;
+      font-weight: 300;
+      color: var(--bark);
+      line-height: 1.75;
+      max-width: 380px;
+      margin: 0 auto;
+    }
+
+    /* ── Signup card ── */
+    .signup-card {
+      background: white;
+      border: 1px solid var(--fog);
+      border-radius: 12px;
+      padding: 2rem 1.8rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .signup-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--forest);
+      margin-bottom: 0.6rem;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .email-input {
+      flex: 1;
+      padding: 0.85rem 1rem;
+      background: var(--cream);
+      border: 1.5px solid var(--fog);
+      border-radius: 6px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: var(--charcoal);
+      outline: none;
+      transition: border-color 0.2s;
+      min-width: 0;
+    }
+
+    .email-input::placeholder { color: var(--mist); }
+    .email-input:focus { border-color: var(--forest-light); }
+
+    .submit-btn {
+      padding: 0.85rem 1.3rem;
+      background: var(--forest);
+      color: var(--cream);
+      border: none;
+      border-radius: 6px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .submit-btn:hover { background: var(--forest-deep); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .error-msg {
+      font-size: 0.75rem;
+      color: #c0392b;
+      margin-top: 0.5rem;
+      display: none;
+    }
+    .error-msg.visible { display: block; }
+
+    /* ── Success state ── */
+    .success-state {
+      display: none;
+      text-align: center;
+      animation: fadeUp 0.4s ease forwards;
+    }
+
+    .success-state.visible { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .success-icon {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: var(--forest);
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.5); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    .success-icon svg {
+      width: 26px; height: 26px;
+      stroke: var(--cream);
+      stroke-width: 2.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--forest-deep);
+      margin-bottom: 0.5rem;
+    }
+
+    .success-msg {
+      font-size: 0.85rem;
+      color: var(--bark);
+      font-weight: 300;
+      line-height: 1.65;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Confirm nudge ── */
+    .confirm-nudge {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      background: #f5f0e8;
+      border: 1px solid var(--fog);
+      border-left: 3px solid var(--gold);
+      border-radius: 6px;
+      padding: 0.9rem 1rem;
+      text-align: left;
+      margin-top: 1rem;
+    }
+
+    .confirm-nudge-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+    }
+
+    .confirm-nudge-text {
+      font-size: 0.78rem;
+      color: var(--bark);
+      font-weight: 300;
+      line-height: 1.55;
+    }
+
+    .confirm-nudge-text strong {
+      font-weight: 500;
+      color: var(--charcoal);
+      display: block;
+      margin-bottom: 0.15rem;
+      font-size: 0.8rem;
+    }
+
+    /* ── Feature row ── */
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .feature-dot {
+      width: 6px; height: 6px;
+      background: var(--forest-light);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 0.45rem;
+    }
+
+    .feature-text {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--bark);
+      line-height: 1.6;
+    }
+
+    .feature-text strong {
+      color: var(--forest-deep);
+      font-weight: 500;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.68rem;
+      color: var(--mist);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
+    footer a { color: var(--bark-light); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<div class="forest-bar"></div>
+
+<header>
+  <div class="logo-wordmark">
+    <svg class="logo-trees" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="20,65 35,30 50,65" fill="#2d4a35" opacity="0.7"/>
+      <rect x="32" y="65" width="6" height="10" fill="#6b4c2a" opacity="0.8"/>
+      <polygon points="45,65 60,10 75,65" fill="#1e3326"/>
+      <rect x="57" y="65" width="6" height="12" fill="#6b4c2a"/>
+      <polygon points="70,65 85,32 100,65" fill="#2d4a35" opacity="0.7"/>
+      <rect x="82" y="65" width="6" height="10" fill="#6b4c2a" opacity="0.8"/>
+      <path d="M55,12 Q60,6 65,12" stroke="#4a7c59" stroke-width="1.5" fill="none" opacity="0.8"/>
+      <path d="M51,10 Q60,2 69,10" stroke="#4a7c59" stroke-width="1.5" fill="none" opacity="0.5"/>
+    </svg>
+    <div class="logo-boreal">Boreal</div>
+    <div class="logo-goods">Goods</div>
+    <div class="logo-divider">
+      <div class="logo-divider-line"></div>
+      <div class="logo-diamond"></div>
+      <div class="logo-divider-line"></div>
+    </div>
+    <div class="logo-tagline">Made in the North</div>
+  </div>
+</header>
+
+<main>
+  <div class="section-divider"></div>
+
+  <div class="hero">
+    <p class="hero-eyebrow">Coming soon</p>
+    <h1 class="hero-headline">Home goods with<br><em>quiet intelligence</em></h1>
+    <p class="hero-body">Objects that belong in your home — and know it. Crafted in Edmonton, Alberta, with care built quietly in.</p>
+  </div>
+
+  <!-- Signup card -->
+  <div class="signup-card">
+
+    <!-- Form state -->
+    <div id="form-state">
+      <label class="signup-label" for="email-input">Be the first to know</label>
+      <div class="input-row">
+        <input
+          type="email"
+          id="email-input"
+          class="email-input"
+          placeholder="your@email.com"
+          autocomplete="email"
+          inputmode="email"
+        >
+        <button class="submit-btn" id="submit-btn">Notify me</button>
+      </div>
+      <div class="error-msg" id="email-error">Please enter a valid email address.</div>
+    </div>
+
+    <!-- Success state -->
+    <div class="success-state" id="success-state">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 class="success-title">You're on the list</h2>
+      <p class="success-msg">We'll reach out when Boreal Goods is ready to ship.</p>
+      <div class="confirm-nudge">
+        <div class="confirm-nudge-icon">✉️</div>
+        <div class="confirm-nudge-text">
+          <strong>Check your inbox</strong>
+          You may have a confirmation email waiting — give it a quick confirm to secure your spot. Check your spam folder if you don't see it.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Features -->
+  <div class="features">
+    <div class="feature">
+      <div class="feature-dot"></div>
+      <p class="feature-text"><strong>Quiet technology, built in.</strong> Each piece carries a small intelligence. No apps, no setup — just a tap.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-dot"></div>
+      <p class="feature-text"><strong>Designed for the everyday.</strong> Functional objects that earn a place on your shelf or wall.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-dot"></div>
+      <p class="feature-text"><strong>Northern craft.</strong> Made in Edmonton, Alberta, with materials chosen to last.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <a href="https://borealgoods.ca" target="_blank">borealgoods.ca</a>
+  &nbsp;·&nbsp; Edmonton, Alberta
+</footer>
+
+<script>
+  const emailInput = document.getElementById('email-input');
+  const submitBtn  = document.getElementById('submit-btn');
+  const emailError = document.getElementById('email-error');
+  const formState  = document.getElementById('form-state');
+  const successState = document.getElementById('success-state');
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  submitBtn.addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+
+    if (!isValidEmail(email)) {
+      emailError.classList.add('visible');
+      emailInput.focus();
+      return;
+    }
+
+    emailError.classList.remove('visible');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Saving…';
+
+    try {
+      await fetch('https://app.kit.com/forms/9338084/subscriptions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email_address: email })
+      });
+    } catch (e) {
+      // Fail silently — still show success to user
+    }
+
+    formState.style.display = 'none';
+    successState.classList.add('visible');
+  });
+
+  // Clear error on input
+  emailInput.addEventListener('input', () => {
+    emailError.classList.remove('visible');
+  });
+
+  // Allow Enter key to submit
+  emailInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') submitBtn.click();
+  });
+</script>
+
+</body>
+</html>
